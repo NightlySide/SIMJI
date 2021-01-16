@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SIMJI - Simulation de Jeu d'Instructions</title>
+		<link rel="shortcut icon" href="favicon.png" />
+
+		<!-- You MUST include jQuery before Fomantic -->
+		<script src="jquery-3.5.1.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="semantic/semantic.min.css" />
+		<link rel="stylesheet" type="text/css" href="index.css" />
+		<script src="semantic/semantic.min.js"></script>
+		<script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body onload="start()">
+		<!-- UI layout -->
+		<div class="full-height">
+			<div class="ui vertical inverted left visible sidebar menu">
+				<div class="item">
+					<h1 style="margin-bottom: 0">SIMJI</h1>
+					<em>Simulateur de Jeu d'Instructions</em>
+				</div>
+				<div class="item">
+					Loading Files
+					<div class="menu">
+						<span class="item">Main Program</span>
+						<div class="item">
+							<label for="mainprogramfile" class="ui icon button fluid">
+								<i class="upload icon" style="padding-right: 1.5em"></i>
+								<span id="mainprogramfile-text">Load program file</span>
+							</label>
+							<input type="file" id="mainprogramfile" class="ui file input" accept=".asm, .txt" />
+						</div>
+						<span class="item">Memory file</span>
+						<div class="item">
+							<label for="memoryfile" class="ui icon button fluid">
+								<i class="upload icon" style="padding-right: 1.5em"></i>
+								<span id="memoryfile-text">Load memory file</span>
+							</label>
+							<input type="file" id="memoryfile" class="ui file input" accept=".dat, .txt" />
+						</div>
+					</div>
+				</div>
+				<div class="item">
+					<i class="play icon"></i> Program Controls
+					<div class="menu">
+						<div class="item">
+							<button id="btn-loadbuffer" class="ui button fluid">
+								<i class="refresh icon"></i>Load buffer
+							</button>
+						</div>
+						<div class="item">
+							<button id="btn-step" class="ui button fluid disabled">Step</button>
+						</div>
+						<div class="item">
+							<button id="btn-run" class="ui button primary fluid disabled">Run</button>
+						</div>
+					</div>
+				</div>
+				<div class="item">
+					<i class="microchip icon"></i> Stats
+					<div class="menu">
+						<div class="item" id="nb-lines"># lines : <span class="stat">0</span></div>
+						<div class="item"># cycles : <span class="stat">0</span></div>
+						<div class="item">PC : <span class="stat">0</span></div>
+					</div>
+				</div>
+				<div class="item">
+					<i class="cogs icon"></i> Options
+					<div class="menu">
+						<div class="item">Une option</div>
+						<div class="item">Deuxième option</div>
+					</div>
+				</div>
+			</div>
+			<div class="pusher">
+				<!-- Site content !-->
+				<div class="container">
+					<h2>Code editor</h2>
+					<div id="program-code"></div>
+				</div>
+
+				<!-- Console -->
+				<div class="console-holder">
+					<h4 style="margin: 0">Console</h4>
+					<textarea readonly id="console"></textarea>
+				</div>
+			</div>
+		</div>
+
+		<!-- Connect UI actions to Go functions -->
+		<script>
+			var editor = ace.edit("program-code");
+			editor.session.setMode("ace/mode/assembly_x86");
+			editor.setTheme("ace/theme/one_dark");
+			editor.setOptions({
+				fontSize: "14pt"
+			});
+			editor.setValue(
+				"; ==== TUTORIAL ====\n;\n; 1. Load an assembly program (.asm)\n; 2. Make the changes in the editor\n; 3. Click the 'Load Buffer' button to load changes\n; 4. Click the 'run' button to run the program\n;\n; === END OF TUTORIAL ===",
+				1
+			);
+
+			$(document).ready(() => {});
+
+			function loadFileContents(file) {
+				if (file) {
+					var reader = new FileReader();
+					reader.readAsText(file, "UTF-8");
+					reader.onload = function (evt) {
+						editor.setValue(evt.target.result, -1);
+
+						$("body").toast({
+							title: "Success!",
+							class: "success",
+							message: "The file was loaded successfully",
+							showProgress: "bottom",
+							classProgress: "black",
+							position: "bottom right",
+							displayTime: 5000
+						});
+						return evt.target.result;
+					};
+					reader.onerror = function (evt) {
+						document.getElementById("program-code").innerHTML = "Error reading file";
+
+						$("body").toast({
+							title: "Error!",
+							class: "error",
+							message: "There was a problem while loading the file...",
+							showProgress: "bottom",
+							classProgress: "black",
+							position: "bottom right",
+							displayTime: 5000
+						});
+						return "Error reading file";
+					};
+				}
+			}
+
+			function consoleHelloWorld() {
+				printConsole("[+] Assembly program ready !");
+			}
+
+			function scrollBottomConsole() {
+				var console = $("#console");
+				if (console.length) psconsole.scrollTop(psconsole[0].scrollHeight - psconsole.height());
+			}
+
+			function printConsole(message) {
+				$("#console").append(message + "\n");
+				scrollBottomConsole();
+			}
+
+			function unlockButtons() {
+				$("#btn-step").removeClass("disabled");
+				$("#btn-run").removeClass("disabled");
+			}
+
+			async function updateStats() {
+				$("#nb-lines span.stat").html(await getProgLines());
+			}
+
+			$("#mainprogramfile").change(() => {
+				var file = document.getElementById("mainprogramfile").files[0];
+				$("#mainprogramfile-text").html(file.name);
+
+				loadFileContents(file);
+			});
+
+			$("#memoryfile").change(() => {
+				var file = document.getElementById("mainprogramfile").files[0];
+				$("#memoryfile-text").html(file.name);
+			});
+
+			$("#btn-loadbuffer").click(() => {
+				sendProgramContent(editor.getValue());
+			});
+
+			$("#btn-run").click(() => {
+				runCode();
+			});
+		</script>
+	</body>
+</html>
