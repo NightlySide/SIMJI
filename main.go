@@ -4,10 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"net/http"
 
-	"simji/assembler"
-	"simji/gui"
-	"simji/vm"
+	"github.com/markbates/pkger"
+
+	"simji/lib/assembler"
+	"simji/lib/gui"
+	"simji/lib/vm"
 )
 
 var showRegs = flag.Bool("show-regs", false, "show regs on each step")
@@ -45,6 +48,7 @@ func main() {
 	flag.Parse()
 
 	if (*launchGUI) {
+		LoadServer()
 		fmt.Println("Launching gui...")
 		gui.ShowGUI()
 	} else {
@@ -69,4 +73,10 @@ func main() {
 		vm.LoadProg(prog)
 		vm.Run(*showRegs, *showMem, *showDebug)
 	}
+}
+
+func LoadServer() {
+	fmt.Println("Starting web server on port :5000")
+	dir := http.FileServer(pkger.Dir("/static"))
+	go http.ListenAndServe(":5000", dir)
 }
