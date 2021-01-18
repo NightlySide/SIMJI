@@ -3,8 +3,9 @@ package assembler
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"strings"
+
+	"simji/lib/log"
 )
 
 // ASMToStringArray permet de charger le contenu d'un fichier assembleur (.asm)
@@ -12,7 +13,7 @@ func ASMToStringArray(filename string) []string {
 	content, err := ioutil.ReadFile(filename)
 
 	if err != nil {
-		log.Fatal(err)
+		log.GetLogger().Error(err.Error())
 	}
 
 	lines := strings.Split(string(content), "\n")
@@ -25,12 +26,12 @@ func ASMToStringArray(filename string) []string {
 // AsmInstructions traduit des instructions asm en instructions machine
 func AsmInstructions(lines []string, debug ...bool) [][]int {
 	var numInstructions [][]int
-	var labels = loadLabels(lines, debug...)
+	var labels = loadLabels(lines)
 
 	var showDebug bool
 	if len(debug) >=1 { showDebug = debug[0] }
 
-	if showDebug { fmt.Println("===Translating ASM to hex instr===") }
+	log.GetLogger().DebugTitle("Translating ASM to hex instr")
 
 	var pc int
 
@@ -93,7 +94,7 @@ func AsmInstructions(lines []string, debug ...bool) [][]int {
 						numInstr = append(numInstr, value)
 						break
 					default:
-						log.Fatal("Wrong number of arguments !")
+						log.GetLogger().Error("Wrong number of arguments !")
 						break
 				}
 			}
@@ -113,7 +114,7 @@ func ComputeHexInstructions(numInstructions [][]int, debug ...bool) []int {
 	var showDebug bool
 	if len(debug) >=1 { showDebug = debug[0] }
 
-	if showDebug { fmt.Println("===Translate to HEX instructions===") }
+	log.GetLogger().DebugTitle("Translate to HEX instructions")
 
 	var decInstructions []int
 

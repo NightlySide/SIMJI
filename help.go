@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"simji/lib/log"
 
 	"github.com/fatih/color"
 )
@@ -56,7 +57,7 @@ func usage() {
 }
 
 func missingFileMessage() {
-	fmt.Printf("[%s] %s: Missing input file\n", color.RedString("-"), color.RedString("ERROR"))
+	log.GetLogger().Error("Missing input file")
 	fmt.Println("Type: simji --help to display the program usage")
 }
 

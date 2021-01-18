@@ -2,8 +2,8 @@ package gui
 
 import (
 	"fmt"
-	"log"
 	"simji/lib/assembler"
+	"simji/lib/log"
 	"simji/lib/vm"
 	"strconv"
 	"strings"
@@ -26,19 +26,14 @@ func newBindingManager(ui lorca.UI) *BindingsManager {
 func (bm *BindingsManager) setupBindings() {
 	// When the UI is ready
 	bm.ui.Bind("start", func() {
-		log.Println("UI is ready")
+		log.GetLogger().Info("UI is ready")
 		bm.ui.Eval("consoleHelloWorld()")
 	})
 
 	// Create and bind Go object to the UI
-	bm.ui.Bind("printHello", bm.helloWorld)
 	bm.ui.Bind("sendProgramContent", bm.loadProgramContent)
 	bm.ui.Bind("runCode", bm.runProg)
 	bm.ui.Bind("runStep", bm.runStep)
-}
-
-func (bm BindingsManager) helloWorld() {
-	log.Println("Hello world !")
 }
 
 func (bm *BindingsManager) loadProgramContent(content string) {

@@ -1,7 +1,7 @@
 package assembler
 
 import (
-	"fmt"
+	"simji/lib/log"
 	"strconv"
 	"strings"
 )
@@ -25,10 +25,8 @@ func GetHighestRegister(lines []string) int {
 	return max
 }
 
-func loadLabels(lines []string, debug ...bool) map[string]int {
-	var showDebug bool
-	if len(debug) >=1 { showDebug = debug[0] }
-	if showDebug { fmt.Println("===Loading Labels Dictionary===") }
+func loadLabels(lines []string) map[string]int {
+	log.GetLogger().DebugTitle("Loading Labels Dictionary")
 
 	var labels = make(map[string]int)
 	var pc int = 0
@@ -37,7 +35,7 @@ func loadLabels(lines []string, debug ...bool) map[string]int {
 		isLabel, label, rest := containsLabel(line)
 		// on a trouvé un label
 		if isLabel {
-			if showDebug { fmt.Println("Found label: ", label, "\twith address: ", pc) }
+			log.GetLogger().Debug("Found label: " + label + "\twith address: " + strconv.Itoa(pc))
 			// on l'ajoute au dict des labels
 			labels[label] = pc
 		}
