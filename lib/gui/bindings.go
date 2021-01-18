@@ -5,6 +5,7 @@ import (
 	"log"
 	"simji/lib/assembler"
 	"simji/lib/vm"
+	"strconv"
 	"strings"
 
 	"github.com/zserge/lorca"
@@ -17,9 +18,9 @@ type BindingsManager struct {
 	ui lorca.UI
 }
 
-func newBindingManager(ui lorca.UI) BindingsManager {
+func newBindingManager(ui lorca.UI) *BindingsManager {
 	bm := BindingsManager{ui: ui}
-	return bm
+	return &bm
 }
 
 func (bm *BindingsManager) setupBindings() {
@@ -33,9 +34,7 @@ func (bm *BindingsManager) setupBindings() {
 	bm.ui.Bind("printHello", bm.helloWorld)
 	bm.ui.Bind("sendProgramContent", bm.loadProgramContent)
 	bm.ui.Bind("runCode", bm.runProg)
-	bm.ui.Bind("getProgLines", func() int {
-		return len(bm.vm.GetProg())
-	})
+	bm.ui.Bind("runStep", bm.runStep)
 }
 
 func (bm BindingsManager) helloWorld() {
@@ -49,8 +48,8 @@ func (bm *BindingsManager) loadProgramContent(content string) {
 	for i := range lines {
 		lines[i] = strings.TrimSpace(lines[i])
 	}
-	numRegs := assembler.GetHighestRegister(lines) + 1
-	vm := vm.NewVM(numRegs, 256)
+	//numRegs := assembler.GetHighestRegister(lines) + 1
+	vm := vm.NewVM(32, 1000)
 
 	numInstructions := assembler.AsmInstructions(lines, true)
 	prog := assembler.ComputeHexInstructions(numInstructions, true)
@@ -62,13 +61,40 @@ func (bm *BindingsManager) loadProgramContent(content string) {
 
 	bm.vm = vm
 
-	// lets unlock everythin
-	bm.ui.Eval("updateStats()")
-	bm.ui.Eval("unlockButtons()")
+	// lets unlock everything
 	bm.ui.Eval("printConsole('[+] Buffer loaded into the program')")
+	bm.ui.Eval("unlockButtons()")
+	bm.update()
 }
 
 func (bm *BindingsManager) runProg() {
 	fmt.Println(len(bm.vm.GetProg()))
-	bm.vm.Run(true, true, true)
+	bm.vm.RunWithCallback(bm.update)
+}
+
+func (bm *BindingsManager) runStep() {
+	fmt.Println("Doing a step")
+	bm.vm.Step()
+	bm.update()
+}
+
+func (bm *BindingsManager) update() {
+	nbLines := strconv.Itoa(len(bm.vm.GetProg()))
+	nbCycles := strconv.Itoa(bm.vm.GetCycles())
+	pc := strconv.Itoa(bm.vm.GetPC())
+	bm.ui.Eval("updateStats(" + nbLines + "," + nbCycles + "," + pc + ")")
+
+	regsStr := "["
+	for _, reg := range bm.vm.GetRegs() {
+		regsStr += strconv.Itoa(reg) + ","
+	}
+	regsStr = regsStr[:len(regsStr) - 1] + "]"
+	bm.ui.Eval("setRegisters(" + regsStr + ")")
+
+	memsStr := "["
+	for _, mem := range bm.vm.GetMemory() {
+		memsStr += strconv.Itoa(mem) + ","
+	}
+	memsStr = memsStr[:len(memsStr) - 1] + "]"
+	bm.ui.Eval("setMemoryBlocks(" + memsStr + ")")
 }

@@ -8,7 +8,7 @@ import (
 
 // ShowGUI permet de lancer le GUI
 func ShowGUI() {
-	//loadServer()
+	LoadServer()
 
 	// Create UI with basic HTML passed via data URI
 	ui, err := lorca.New("http://127.0.0.1:5000/", "", 480, 320)

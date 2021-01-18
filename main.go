@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"net/http"
 
 	"github.com/markbates/pkger"
 
@@ -44,11 +43,12 @@ func init() {
 }
 
 func main() {
+	// Include static files for packaging
+	pkger.Include("/static")
 	helloWorld()
 	flag.Parse()
 
 	if (*launchGUI) {
-		LoadServer()
 		fmt.Println("Launching gui...")
 		gui.ShowGUI()
 	} else {
@@ -59,24 +59,18 @@ func main() {
 			os.Exit(1);
 		}
 		
-		lines := assembler.LoadASM(args[0])
-		numReg := assembler.GetHighestRegister(lines) + 1 // +1 for the r0 that stays at 0
+		lines := assembler.ASMToStringArray(args[0])
+		// numReg := assembler.GetHighestRegister(lines) + 1 // +1 for the r0 that stays at 0
 		numInstructions := assembler.AsmInstructions(lines, *showDebug)
 		prog := assembler.ComputeHexInstructions(numInstructions, *showDebug)
 
 		if *showDebug { 
 			fmt.Println("\n\n===Launching VM===") 
-			fmt.Println("-- Creating VM with: ", numReg, " registers")
+			fmt.Println("-- Creating VM with: ", 32, " registers")
 		}
-		vm := vm.NewVM(numReg, 256)
+		vm := vm.NewVM(32, 1000)
 		
 		vm.LoadProg(prog)
 		vm.Run(*showRegs, *showMem, *showDebug)
 	}
-}
-
-func LoadServer() {
-	fmt.Println("Starting web server on port :5000")
-	dir := http.FileServer(pkger.Dir("/static"))
-	go http.ListenAndServe(":5000", dir)
 }

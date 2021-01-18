@@ -19,6 +19,8 @@
 .container {
 	margin: 1em;
 	height: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 code {
@@ -47,8 +49,16 @@ code {
 	resize: none;
 }
 
-#program-code {
-	border-radius: 0.25em;
+.tab-container {
 	height: 93%;
 	min-height: 200px;
+}
+
+#program-code {
+	border-radius: 0.25em;
+	height: 100%;
+}
+
+.ace_gutter, .ace_scroller {
+	padding: 0.5em 0;
 }

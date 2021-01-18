@@ -35,9 +35,22 @@ func (vm *VM) LoadProg(prog []int) {
 // GetProg retourne le contenu du programme chargé
 func (vm VM) GetProg() []int { return vm.prog }
 
+// GetCycles retourne le nombre du cycle de programme
+func (vm VM) GetCycles() int { return vm.cycles }
+
+// GetPC retourne le compteur du programme
+func (vm VM) GetPC() int { return vm.pc }
+
+// GetRegs le contenu des registres 
+func (vm VM) GetRegs() []int { return vm.regs }
+
+// GetMemory le contenu de la mémoire 
+func (vm VM) GetMemory() []int { return vm.mems }
+
 func (vm *VM) fetch() int {
 	instruction := vm.prog[vm.pc]
 	vm.pc++
+	vm.cycles++
 	return instruction
 }
 
@@ -62,9 +75,27 @@ func (vm *VM) Run(showRegs bool, showMem bool, debug bool) {
 	vm.running = true
 	vm.debug = debug
 	for vm.running {
-		instruction := vm.fetch()
-		vm.eval(vm.decode(instruction))
+		vm.Step()
 		if showRegs { vm.showRegs() }
 		if showMem { vm.showMem() }
 	}
+}
+
+// RunWithCallback permet de lancer l'exécution de la machine virtuelle
+// en appelant une fonction à chaque itération
+func (vm *VM) RunWithCallback(callback func()) {
+	vm.running = true
+	vm.debug = false
+	for vm.running {
+		vm.Step()
+		//vm.showRegs()
+		//vm.showMem()
+		callback();
+	}
+}
+
+// Step permet de faire une itération du programme
+func (vm *VM) Step() {
+	instruction := vm.fetch()
+	vm.eval(vm.decode(instruction))
 }
