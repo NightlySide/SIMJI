@@ -5,57 +5,25 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/markbates/pkger"
-
 	"simji/lib/assembler"
 	"simji/lib/gui"
 	"simji/lib/vm"
+
+	"github.com/markbates/pkger"
 )
 
-var showRegs = flag.Bool("show-regs", false, "show regs on each step")
-var showMem = flag.Bool("show-mem", false, "show memory on each step")
-var showDebug = flag.Bool("debug", false, "show each instruction in the terminal")
-var launchGUI = flag.Bool("gui", false, "start the gui application")
-
-func helloWorld() {
-	fmt.Println("========= SIMJI : Simulateur de Jeu d'Instructions =========")
-	fmt.Println("-- Conçut par Alexandre FROEHLICH")
-	fmt.Println("-- Dans le cadre de l'U.V. 4.5-Architectures numériques")
-	fmt.Println("-- Contact : nightlyside@gmail.com")
-	fmt.Println("-- Site web : https://nightlyside.github.io")
-	fmt.Println("============================================================")
-	fmt.Print("\n\n")
-}
-
-func usage() {
-	helloWorld()
-	fmt.Fprintf(os.Stderr, "usage: %s [inputfile]\n", os.Args[0])
-    flag.PrintDefaults()
-    os.Exit(2)
-}
-
-func init() {
-	flag.Usage = usage
-	flag.BoolVar(showRegs, "r", false, "alias for -show-regs")
-	flag.BoolVar(showMem, "m", false, "alias for -show-mem")
-	flag.BoolVar(showDebug, "d", false, "alias for -debug")
-	flag.BoolVar(launchGUI, "g", false, "alias for -gui")
-}
-
 func main() {
-	// Include static files for packaging
-	pkger.Include("/static")
-	helloWorld()
 	flag.Parse()
 
 	if (*launchGUI) {
 		fmt.Println("Launching gui...")
-		gui.ShowGUI()
+		// Include static files for packaging
+		staticFiles := pkger.Dir("/static")
+		gui.ShowGUI(staticFiles)
 	} else {
 		args := flag.Args()
 		if len(args) < 1 {
-			fmt.Println("Input file is missing.");
-			fmt.Printf("type %s -h for help\n", os.Args[0])
+			missingFileMessage()
 			os.Exit(1);
 		}
 		

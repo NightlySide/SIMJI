@@ -79,6 +79,8 @@ func (vm *VM) Run(showRegs bool, showMem bool, debug bool) {
 		if showRegs { vm.showRegs() }
 		if showMem { vm.showMem() }
 	}
+
+	fmt.Printf("Nombre de cycles : %d\n", vm.cycles)
 }
 
 // RunWithCallback permet de lancer l'exécution de la machine virtuelle

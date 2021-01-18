@@ -2,13 +2,14 @@ package gui
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/zserge/lorca"
 )
 
 // ShowGUI permet de lancer le GUI
-func ShowGUI() {
-	LoadServer()
+func ShowGUI(staticFiles http.FileSystem) {
+	LoadServer(staticFiles)
 
 	// Create UI with basic HTML passed via data URI
 	ui, err := lorca.New("http://127.0.0.1:5000/", "", 480, 320)
