@@ -2,7 +2,7 @@ package gui
 
 import (
 	"net/http"
-	"simji/lib/log"
+	"simji/internal/log"
 )
 
 // LoadServer lance le server de distrib de fichiers

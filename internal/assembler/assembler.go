@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"simji/lib/log"
+	"simji/internal/log"
 )
 
 // ASMToStringArray permet de charger le contenu d'un fichier assembleur (.asm)

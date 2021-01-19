@@ -2,9 +2,9 @@ package gui
 
 import (
 	"fmt"
-	"simji/lib/assembler"
-	"simji/lib/log"
-	"simji/lib/vm"
+	"simji/internal/assembler"
+	"simji/internal/log"
+	"simji/internal/vm"
 	"strconv"
 	"strings"
 

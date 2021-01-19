@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"simji/lib/log"
+	"simji/internal/log"
 
 	"github.com/fatih/color"
 )

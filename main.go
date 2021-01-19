@@ -4,10 +4,10 @@ import (
 	"flag"
 	"os"
 
-	"simji/lib/assembler"
-	"simji/lib/gui"
-	"simji/lib/log"
-	"simji/lib/vm"
+	"simji/internal/assembler"
+	"simji/internal/gui"
+	"simji/internal/log"
+	"simji/internal/vm"
 
 	"github.com/markbates/pkger"
 )
@@ -19,13 +19,13 @@ func main() {
 	if (*showDebug) {
 		log.GetLogger().SetLevel(log.DEBUG)
 	} else {
-		log.GetLogger().SetLevel(log.WARN)
+		log.GetLogger().SetLevel(log.INFO)
 	}
 
 	if (*launchGUI) {
+		staticFiles := pkger.Dir("/internal/static")
 		log.GetLogger().Info("Launching gui...")
 		// Include static files for packaging
-		staticFiles := pkger.Dir("/static")
 		gui.ShowGUI(staticFiles)
 	} else {
 		// If there is not enough arguments

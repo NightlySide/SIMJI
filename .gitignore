@@ -9,6 +9,7 @@
 *.dll
 *.so
 *.dylib
+simji
 
 # Test binary, built with `go test -c`
 *.test
@@ -25,6 +26,6 @@
 
 ### Dist
 pkged.go
-/dist
+/pkg
 
 # End of https://www.toptal.com/developers/gitignore/api/go

@@ -1,7 +1,7 @@
 package assembler
 
 import (
-	"simji/lib/log"
+	"simji/internal/log"
 	"strconv"
 	"strings"
 )

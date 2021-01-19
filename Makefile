@@ -1,10 +1,10 @@
 APP=simji
-APPDIR=dist/$(APP)_1.1.0
+APPDIR=pkg/$(APP)_1.1.0
 
-.PHONY: makefolders copyicons packagefiles gobuild debianbuild clean postclean
+.PHONY: test makefolders copyicons packagefiles gobuild debianbuild clean postclean
 
 .ONESHELL:
-default: clean makefolders copyicons gobuild debianbuild postclean
+default: clean makefolders copyicons packagefiles gobuild debianbuild postclean
 
 makefolders:
 	@echo "-- Making folders"
@@ -16,8 +16,8 @@ makefolders:
 
 copyicons:
 	@echo "-- Copying icons"
-	cp static/favicon.png $(APPDIR)/usr/share/icons/hicolor/1024x1024/apps/$(APP).png
-	cp static/favicon.png $(APPDIR)/usr/share/icons/hicolor/256x256/apps/$(APP).png
+	cp internal/static/favicon.png $(APPDIR)/usr/share/icons/hicolor/1024x1024/apps/$(APP).png
+	cp internal/static/favicon.png $(APPDIR)/usr/share/icons/hicolor/256x256/apps/$(APP).png
 
 packagefiles:
 	@echo "-- Packaging files"
@@ -62,4 +62,7 @@ clean:
 postclean:
 	-
 	@echo "-- Cleaning post install"
-	#rm pkger.go
+	rm pkged.go
+
+test:
+	go test ./...
