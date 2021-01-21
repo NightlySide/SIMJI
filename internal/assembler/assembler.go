@@ -25,12 +25,9 @@ func ProgramFileToStringArray(filename string) ([]string, error) {
 }
 
 // StringLinesToInstructions traduit des instructions asm en instructions machine
-func StringLinesToInstructions(lines []string, debug ...bool) [][]int {
+func StringLinesToInstructions(lines []string) [][]int {
 	var numInstructions [][]int
 	var labels = loadLabels(lines)
-
-	var showDebug bool
-	if len(debug) >=1 { showDebug = debug[0] }
 
 	log.GetLogger().Title(log.DEBUG, "Translating ASM to hex instr")
 
@@ -42,14 +39,14 @@ func StringLinesToInstructions(lines []string, debug ...bool) [][]int {
 
 		// si la ligne n'est pas vide et qu'il a une instruction
 		if rest != "" {
-			if showDebug { fmt.Printf("%08x\t", pc) }
+			log.GetLogger().Debug("%08x\t", pc)
 
 			opName, args := splitInstruction(rest)
 			
 			var numInstr []int
 			// on ajoute le numéro d'instruction depuis la liste
 			numInstr = append(numInstr, OpCodes[opName])
-			if showDebug { fmt.Print(opName + "\t") } 
+			log.GetLogger().Debug(opName + "\t")
 
 			var value int
 			var isReg bool
@@ -100,11 +97,9 @@ func StringLinesToInstructions(lines []string, debug ...bool) [][]int {
 				}
 			}
 
-			if showDebug { 
-				spacer := "\t"
-				if (opName == "scall") {spacer = "\t\t"}
-				fmt.Println(numInstr, spacer + strings.Join(args, " ")) 
-			}
+			spacer := "\t"
+			if (opName == "scall") {spacer = "\t\t"}
+			log.GetLogger().Debug(fmt.Sprint(numInstr) + spacer + strings.Join(args, " ") + "\n") 
 
 			numInstructions = append(numInstructions, numInstr)
 			pc++
@@ -115,16 +110,14 @@ func StringLinesToInstructions(lines []string, debug ...bool) [][]int {
 }
 
 // ComputeHexInstructions traduit les instructions machines en code hexadécimal
-func ComputeHexInstructions(numInstructions [][]int, debug ...bool) []int {
-	var showDebug bool
-	if len(debug) >=1 { showDebug = debug[0] }
+func ComputeHexInstructions(numInstructions [][]int) []int {
 
 	log.GetLogger().Title(log.DEBUG, "Translate to HEX instructions")
 
 	var decInstructions []int
 
 	for pc, instr := range numInstructions {
-		if showDebug { fmt.Printf("%08x\t", pc) }
+		log.GetLogger().Debug("%08x\t", pc)
 
 		decInstr := instr[0] << 27
 
@@ -154,7 +147,7 @@ func ComputeHexInstructions(numInstructions [][]int, debug ...bool) []int {
 		}
 
 		decInstructions = append(decInstructions, decInstr)
-		if showDebug { fmt.Printf("0x%08x\n", decInstr) }
+		log.GetLogger().Debug("0x%08x\n", decInstr)
 	}
 
 	return decInstructions

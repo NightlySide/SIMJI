@@ -38,8 +38,8 @@ func main() {
 		}
 
 		lines, _ := assembler.ProgramFileToStringArray(args[0])
-		numInstructions := assembler.StringLinesToInstructions(lines, *showDebug)
-		prog := assembler.ComputeHexInstructions(numInstructions, *showDebug)
+		numInstructions := assembler.StringLinesToInstructions(lines)
+		prog := assembler.ComputeHexInstructions(numInstructions)
 
 		// no output file specified -> print in console
 		if *outputFile == "" {
@@ -97,8 +97,8 @@ func main() {
 
 		// Else we load the program
 		lines, _ := assembler.ProgramFileToStringArray(args[0])
-		numInstructions := assembler.StringLinesToInstructions(lines, *showDebug)
-		prog := assembler.ComputeHexInstructions(numInstructions, *showDebug)
+		numInstructions := assembler.StringLinesToInstructions(lines)
+		prog := assembler.ComputeHexInstructions(numInstructions)
 
 		log.GetLogger().Title(log.DEBUG, "Launching VM")
 		log.GetLogger().Debug("-- Creating VM with: 32 registers\n")

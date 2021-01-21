@@ -77,7 +77,7 @@ func TestPrinting(t *testing.T) {
 	phrase := "Hello world!"
 	output := captureOutput(func() {log.Debug(phrase)})
 
-	if output != phrase + "\n" {
+	if output != phrase {
 		t.Errorf("Log debug error - Expected: %s, got: %s\n", phrase, output)
 	}
 }

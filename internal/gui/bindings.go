@@ -46,8 +46,8 @@ func (bm *BindingsManager) loadProgramContent(content string) {
 	//numRegs := assembler.GetHighestRegister(lines) + 1
 	vm := vm.NewVM(32, 1000)
 
-	numInstructions := assembler.StringLinesToInstructions(lines, true)
-	prog := assembler.ComputeHexInstructions(numInstructions, true)
+	numInstructions := assembler.StringLinesToInstructions(lines)
+	prog := assembler.ComputeHexInstructions(numInstructions)
 	vm.LoadProg(prog)
 
 	for _, line := range prog {
