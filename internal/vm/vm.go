@@ -2,6 +2,11 @@ package vm
 
 import (
 	"fmt"
+	"simji/internal/log"
+	"time"
+
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 // VM est une machine virtuelle
@@ -15,6 +20,8 @@ type VM struct {
 	prog []int
 	running bool
 	debug bool
+	startTime time.Time
+	totalTime time.Duration
 }
 
 // NewVM permet de créer une nouvelle machine virtuelle
@@ -24,12 +31,6 @@ func NewVM(numReg int, numMemReg int) VM {
 	vm.mems = make([]int, vm.numMemReg)
 
 	return vm
-}
-
-// LoadProg charge une liste d'instruction dans le programme de la VM
-func (vm *VM) LoadProg(prog []int) {
-	vm.prog = prog
-	vm.pc = 0
 }
 
 // GetProg retourne le contenu du programme chargé
@@ -70,17 +71,31 @@ func (vm VM) showMem() {
 	fmt.Println(res)
 }
 
+func (vm *VM) printPerf() {
+	log.GetLogger().Title(log.INFO, "Performances") 
+	fmt.Printf("Nombre de cycles : %d\n", vm.cycles)
+	fmt.Printf("Effectués en : %s\n", vm.totalTime)
+
+	p := message.NewPrinter(language.French)
+
+	opParSeconde := int64(float64(vm.cycles) / vm.totalTime.Seconds())
+	p.Printf("Perfomances : %d opérations/seconde\n", opParSeconde)
+	fmt.Println("===================")
+}
+
 // Run permet de lancer l'exécution de la machine virtuelle
-func (vm *VM) Run(showRegs bool, showMem bool, debug bool) {
+func (vm *VM) Run(showRegs bool, showMem bool, debug bool, showPerfs bool) {
 	vm.running = true
 	vm.debug = debug
+	vm.startTime = time.Now()
 	for vm.running {
 		vm.Step()
 		if showRegs { vm.showRegs() }
 		if showMem { vm.showMem() }
 	}
+	vm.totalTime += time.Since(vm.startTime)
 
-	fmt.Printf("Nombre de cycles : %d\n", vm.cycles)
+	if (showPerfs) { vm.printPerf() }
 }
 
 // RunWithCallback permet de lancer l'exécution de la machine virtuelle
@@ -99,5 +114,5 @@ func (vm *VM) RunWithCallback(callback func()) {
 // Step permet de faire une itération du programme
 func (vm *VM) Step() {
 	instruction := vm.fetch()
-	vm.eval(vm.decode(instruction))
+	vm.eval(decode(instruction))
 }

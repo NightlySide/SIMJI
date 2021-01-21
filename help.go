@@ -29,8 +29,9 @@ func helloWorld() {
 }
 
 func usage() {
-	fmt.Println("usage: simji [--help | -h] [--gui | -g] [--debug | -d]")
-	fmt.Println("             [--show-regs | -r] [--show-mem | -m]")
+	fmt.Println("usage: simji [--help | -h] [--gui | -g] [--debug | -d] [--binary | -b]")
+	fmt.Println("             [--show-regs | -r] [--show-mem | -m] [--benchmark | -bm]")
+	fmt.Println("             [--assemble | -a] [--disassemble | -da] [--output | -o]")
 	fmt.Println("             \"filename\"")
 	fmt.Println()
 
@@ -39,7 +40,18 @@ func usage() {
 
 	fmt.Println("start and use the program")
 	fmt.Println("  simji myprogram.asm\tLaunch the program \"myprogram.asm\" in CLI mode")
+	fmt.Println("  simji --binary myprogram.bin\tLaunch the binary \"myprogram.bin\" in CLI mode")
 	fmt.Println("  simji --gui\t\tLaunch the program with a Graphical UI")
+	fmt.Println()
+
+	fmt.Println("assemble only the program")
+	fmt.Println("  simji --assemble myprogram.asm\tAssemble the program and prints the content in the console")
+	fmt.Println("  simji --assemble --output=program.bin myprogram.asm\tAssemble the program into a binary file")
+	fmt.Println()
+
+	fmt.Println("disassemble a binary file")
+	fmt.Println("  simji --disassemble myprogram.bin\tDisassemble the program and prints the content in the console")
+	fmt.Println("  simji --disassemble --output=program.asm myprogram.bin\tDisassemble the program into a text file")
 	fmt.Println()
 
 	fmt.Println("debug the loaded program in translation/execution")
@@ -61,18 +73,27 @@ func missingFileMessage() {
 	fmt.Println("Type: simji --help to display the program usage")
 }
 
+var runBinary = flag.Bool("binary", false, "runs a binary file instead of a program file")
 var showRegs = flag.Bool("show-regs", false, "show regs on each step")
 var showMem = flag.Bool("show-mem", false, "show memory on each step")
 var showDebug = flag.Bool("debug", false, "show each instruction in the terminal")
 var launchGUI = flag.Bool("gui", false, "start the gui application")
-
+var showPerfs = flag.Bool("benchmark", false, "evalue les performances du simulateur")
+var assemble = flag.Bool("assemble", false, "assemble the targeted program")
+var outputFile = flag.String("output", "", "filename of the output file")
+var disassemble = flag.Bool("disassemble", false, "désassemble un fichier binaire")
 
 func init() {
 	flag.Usage = usage
+	flag.BoolVar(runBinary, "b", false, "alias for --binary")
 	flag.BoolVar(showRegs, "r", false, "alias for --show-regs")
 	flag.BoolVar(showMem, "m", false, "alias for --show-mem")
 	flag.BoolVar(showDebug, "d", false, "alias for --debug")
 	flag.BoolVar(launchGUI, "g", false, "alias for --gui")
+	flag.BoolVar(showPerfs, "bm", false, "alias for --benchmark")
+	flag.BoolVar(assemble, "a", false, "alias for --assemble")
+	flag.StringVar(outputFile, "o", "", "alias for --output")
+	flag.BoolVar(disassemble, "da", false, "alias for --disassemble")
 
 	helloWorld()
 }

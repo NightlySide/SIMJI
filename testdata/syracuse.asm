@@ -10,7 +10,7 @@ L_LOOP:
           ; on enregistre r1 dans la mémoire
           store r3, 0, r1
           add r3, 1, r3
-          scall 2
+          ; scall 2
           ;; --FIN DEBUG MEMOIRE 
           ; r1 <= 1 -> fin du programme
           sle r1, 1, r2

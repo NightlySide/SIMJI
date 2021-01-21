@@ -1,7 +1,7 @@
 APP=simji
 APPDIR=pkg/$(APP)_1.1.0
 
-.PHONY: test makefolders copyicons packagefiles gobuild debianbuild clean postclean
+.PHONY: test coverage makefolders copyicons packagefiles gobuild debianbuild clean postclean
 
 .ONESHELL:
 default: clean makefolders copyicons packagefiles gobuild debianbuild postclean
@@ -65,4 +65,19 @@ postclean:
 	rm pkged.go
 
 test:
-	go test ./...
+	@echo "-- Running tests"
+	go run github.com/rakyll/gotest simji/internal/assembler
+	go run github.com/rakyll/gotest simji/internal/vm
+	go run github.com/rakyll/gotest simji/internal/log
+
+coverage:
+	@echo "-- Running test coverage"
+	go run github.com/rakyll/gotest --cover simji/internal/assembler
+	go run github.com/rakyll/gotest --cover simji/internal/vm
+	go run github.com/rakyll/gotest --cover simji/internal/log
+
+coverage-display:
+	@echo "-- Running test coverage and display results"
+	go run github.com/rakyll/gotest -coverprofile=cov.out ./...
+	go tool cover -html cov.out
+	rm cov.out

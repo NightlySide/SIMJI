@@ -10,6 +10,7 @@ import (
 // Level est le niveau de log
 type Level int
 
+// Variables pour le niveau de débug
 const (
 	DEBUG Level = iota
 	INFO = iota
@@ -41,15 +42,14 @@ func (l *Log) SetLevel(newLevel Level) {
 
 // Debug permet de logger un message de débug
 func (l Log) Debug(message string) {
-	message = fmt.Sprintf("%s\n", message)
 	l.log(DEBUG, message)
 }
 
-// DebugTitle permet de logger un titre de débug
-func (l Log) DebugTitle(message string) {
+// Title permet de logger un titre de débug
+func (l Log) Title(level Level, message string) {
 	titleColor := color.New(color.FgGreen).Add(color.Bold)
 	message = "\n===" + titleColor.Sprintf("%s", message) + "===\n"
-	l.log(DEBUG, message)
+	l.log(level, message)
 }
 
 // Info permet de logger un message d'information

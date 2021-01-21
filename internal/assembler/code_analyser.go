@@ -26,7 +26,7 @@ func GetHighestRegister(lines []string) int {
 }
 
 func loadLabels(lines []string) map[string]int {
-	log.GetLogger().DebugTitle("Loading Labels Dictionary")
+	log.GetLogger().Title(log.DEBUG, "Loading Labels Dictionary")
 
 	var labels = make(map[string]int)
 	var pc int = 0
@@ -35,7 +35,7 @@ func loadLabels(lines []string) map[string]int {
 		isLabel, label, rest := containsLabel(line)
 		// on a trouvé un label
 		if isLabel {
-			log.GetLogger().Debug("Found label: " + label + "\twith address: " + strconv.Itoa(pc))
+			log.GetLogger().Debug("Found label: " + label + "\twith address: " + strconv.Itoa(pc) + "\n")
 			// on l'ajoute au dict des labels
 			labels[label] = pc
 		}

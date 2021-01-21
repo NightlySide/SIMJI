@@ -8,30 +8,31 @@ import (
 	"simji/internal/log"
 )
 
-// ASMToStringArray permet de charger le contenu d'un fichier assembleur (.asm)
-func ASMToStringArray(filename string) []string {
+// ProgramFileToStringArray permet de charger le contenu d'un fichier assembleur (.asm)
+func ProgramFileToStringArray(filename string) ([]string, error) {
 	content, err := ioutil.ReadFile(filename)
 
 	if err != nil {
 		log.GetLogger().Error(err.Error())
+		return []string{}, err
 	}
 
 	lines := strings.Split(string(content), "\n")
 	for i := range lines {
 		lines[i] = sanitizeLine(lines[i])
 	}
-	return lines
+	return lines, nil
 }
 
-// AsmInstructions traduit des instructions asm en instructions machine
-func AsmInstructions(lines []string, debug ...bool) [][]int {
+// StringLinesToInstructions traduit des instructions asm en instructions machine
+func StringLinesToInstructions(lines []string, debug ...bool) [][]int {
 	var numInstructions [][]int
 	var labels = loadLabels(lines)
 
 	var showDebug bool
 	if len(debug) >=1 { showDebug = debug[0] }
 
-	log.GetLogger().DebugTitle("Translating ASM to hex instr")
+	log.GetLogger().Title(log.DEBUG, "Translating ASM to hex instr")
 
 	var pc int
 
@@ -41,14 +42,14 @@ func AsmInstructions(lines []string, debug ...bool) [][]int {
 
 		// si la ligne n'est pas vide et qu'il a une instruction
 		if rest != "" {
-			if showDebug { fmt.Printf("%03d\t", pc) }
+			if showDebug { fmt.Printf("%08x\t", pc) }
 
 			opName, args := splitInstruction(rest)
 			
 			var numInstr []int
 			// on ajoute le numéro d'instruction depuis la liste
 			numInstr = append(numInstr, OpCodes[opName])
-			if showDebug { fmt.Print(opName + "\t") }
+			if showDebug { fmt.Print(opName + "\t") } 
 
 			var value int
 			var isReg bool
@@ -99,7 +100,11 @@ func AsmInstructions(lines []string, debug ...bool) [][]int {
 				}
 			}
 
-			if showDebug { fmt.Println(numInstr) }
+			if showDebug { 
+				spacer := "\t"
+				if (opName == "scall") {spacer = "\t\t"}
+				fmt.Println(numInstr, spacer + strings.Join(args, " ")) 
+			}
 
 			numInstructions = append(numInstructions, numInstr)
 			pc++
@@ -114,14 +119,14 @@ func ComputeHexInstructions(numInstructions [][]int, debug ...bool) []int {
 	var showDebug bool
 	if len(debug) >=1 { showDebug = debug[0] }
 
-	log.GetLogger().DebugTitle("Translate to HEX instructions")
+	log.GetLogger().Title(log.DEBUG, "Translate to HEX instructions")
 
 	var decInstructions []int
 
 	for pc, instr := range numInstructions {
-		if showDebug { fmt.Printf("%03d\t", pc) }
+		if showDebug { fmt.Printf("%08x\t", pc) }
 
-		decInstr := instr[0] << (4*6)
+		decInstr := instr[0] << 27
 
 		switch (len(instr)) {
 			case 1:
@@ -132,18 +137,18 @@ func ComputeHexInstructions(numInstructions [][]int, debug ...bool) []int {
 				break
 			case 3:
 				// braz
-				decInstr += instr[1] << (4*4) // reg
+				decInstr += instr[1] << 22 // reg
 				decInstr += instr[2] // address
 			case 4:
 				// jmp
-				decInstr += instr[1] << (4*6-1) // imm
-				decInstr += BinaryComplement(instr[2], 15) << (4*2)  // o
+				decInstr += instr[1] << 26 // imm
+				decInstr += BinaryComplement(instr[2], 21) << 5  // o
 				decInstr += instr[3] // r
 			case 5:
 				// add, load, store ...
-				decInstr += instr[1] << (4*4) // reg
-				decInstr += instr[2] << (4*4 - 1) // imm
-				decInstr += BinaryComplement(instr[3], 7) << (4*2) // o
+				decInstr += instr[1] << 22 // reg
+				decInstr += instr[2] << 21// imm
+				decInstr += BinaryComplement(instr[3], 16) << 5 // o
 				decInstr += instr[4] // reg
 				break
 		}
