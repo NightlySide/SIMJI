@@ -65,11 +65,11 @@ func usage() {
 	fmt.Println("  simji --benchmark\tComputes the number of cycles/second of the vm")
 	fmt.Println()
 
-    os.Exit(2)
+	os.Exit(2)
 }
 
 func missingFileMessage() {
-	log.GetLogger().Error("Missing input file")
+	log.GetLogger().Error("Missing input file\n")
 	fmt.Println("Type: simji --help to display the program usage")
 }
 
@@ -78,7 +78,7 @@ var showRegs = flag.Bool("show-regs", false, "show regs on each step")
 var showMem = flag.Bool("show-mem", false, "show memory on each step")
 var showDebug = flag.Bool("debug", false, "show each instruction in the terminal")
 var launchGUI = flag.Bool("gui", false, "start the gui application")
-var showPerfs = flag.Bool("benchmark", false, "evalue les performances du simulateur")
+var nbBMRuns = flag.Int("benchmark", 0, "evalue les performances du simulateur")
 var assemble = flag.Bool("assemble", false, "assemble the targeted program")
 var outputFile = flag.String("output", "", "filename of the output file")
 var disassemble = flag.Bool("disassemble", false, "désassemble un fichier binaire")
@@ -90,7 +90,7 @@ func init() {
 	flag.BoolVar(showMem, "m", false, "alias for --show-mem")
 	flag.BoolVar(showDebug, "d", false, "alias for --debug")
 	flag.BoolVar(launchGUI, "g", false, "alias for --gui")
-	flag.BoolVar(showPerfs, "bm", false, "alias for --benchmark")
+	flag.IntVar(nbBMRuns, "bm", 0, "alias for --benchmark")
 	flag.BoolVar(assemble, "a", false, "alias for --assemble")
 	flag.StringVar(outputFile, "o", "", "alias for --output")
 	flag.BoolVar(disassemble, "da", false, "alias for --disassemble")

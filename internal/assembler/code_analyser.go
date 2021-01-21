@@ -41,7 +41,9 @@ func loadLabels(lines []string) map[string]int {
 		}
 		_, _, rest = containsComment(rest)
 		// on incrémente le compteur uniquement si il y a une instruction
-		if rest != "" {pc++}
+		if rest != "" {
+			pc++
+		}
 	}
 
 	return labels

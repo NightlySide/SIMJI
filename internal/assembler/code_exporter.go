@@ -14,7 +14,7 @@ func ExportBinaryToFile(hexInstructions []int, filename string) error {
 		res += fmt.Sprintf("0x%08x\t0x%08x\n", i, instr)
 	}
 
-	res = res[:len(res) - 1]
+	res = res[:len(res)-1]
 
 	return ioutil.WriteFile(filename, []byte(res), 0)
 }
@@ -28,7 +28,7 @@ func ExportProgramToFile(strInstructions []string, filename string) error {
 		res += instr + "\n"
 	}
 
-	res = res[:len(res) - 1]
+	res = res[:len(res)-1]
 
 	return ioutil.WriteFile(filename, []byte(res), 0)
 }

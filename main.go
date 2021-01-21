@@ -83,11 +83,11 @@ func main() {
 
 		// else we load the program
 		prog := vm.LoadProgFromFile(args[0])
-		
+
 		vm := vm.NewVM(32, 1000)
 		vm.LoadProg(prog)
-		vm.Run(*showRegs, *showMem, *showDebug, *showPerfs)
-		
+		vm.Run(*showRegs, *showMem, *showDebug)
+
 	} else {
 		// If there is not enough arguments
 		if len(args) < 1 {
@@ -95,16 +95,26 @@ func main() {
 			os.Exit(1)
 		}
 
-		// Else we load the program
-		lines, _ := assembler.ProgramFileToStringArray(args[0])
-		numInstructions := assembler.StringLinesToInstructions(lines)
-		prog := assembler.ComputeHexInstructions(numInstructions)
+		if *nbBMRuns == 0 {
+			// Else we load the program
+			lines, _ := assembler.ProgramFileToStringArray(args[0])
+			numInstructions := assembler.StringLinesToInstructions(lines)
+			prog := assembler.ComputeHexInstructions(numInstructions)
 
-		log.GetLogger().Title(log.DEBUG, "Launching VM")
-		log.GetLogger().Debug("-- Creating VM with: 32 registers\n")
-		vm := vm.NewVM(32, 1000)
+			log.GetLogger().Title(log.DEBUG, "Launching VM")
+			log.GetLogger().Debug("-- Creating VM with: 32 registers\n")
+			vm := vm.NewVM(32, 1000)
 
-		vm.LoadProg(prog)
-		vm.Run(*showRegs, *showMem, *showDebug, *showPerfs)
+			vm.LoadProg(prog)
+			vm.Run(*showRegs, *showMem, *showDebug)
+		} else {
+			// Else we load the program
+			lines, _ := assembler.ProgramFileToStringArray(args[0])
+			numInstructions := assembler.StringLinesToInstructions(lines)
+			prog := assembler.ComputeHexInstructions(numInstructions)
+
+			bm := vm.StartBenchmark(prog, *nbBMRuns)
+			bm.PrintResults()
+		}
 	}
 }

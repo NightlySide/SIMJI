@@ -8,12 +8,6 @@ import (
 	"strings"
 )
 
-// LoadProg charge une liste d'instruction dans le programme de la VM
-func (vm *VM) LoadProg(prog []int) {
-	vm.prog = prog
-	vm.pc = 0
-}
-
 // LoadProgFromFile charge une liste d'instruction dans le programme de la VM
 // à partir d'un fichier binaire
 func LoadProgFromFile(filename string) []int {
@@ -28,9 +22,9 @@ func LoadProgFromFile(filename string) []int {
 	lines := strings.Split(string(content), "\n")
 	for i := range lines {
 		data := strings.Split(lines[i], " ")
-		data = strings.Split(data[len(data) - 1], "\t")
+		data = strings.Split(data[len(data)-1], "\t")
 		// idx := strings.TrimSpace(data[0])
-		instru := strings.TrimSpace(data[len(data) - 1])
+		instru := strings.TrimSpace(data[len(data)-1])
 
 		instru = strings.Replace(instru, "0x", "", -1)
 		hexInstr, err := strconv.ParseUint(instru, 16, 64)

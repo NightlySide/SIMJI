@@ -11,15 +11,15 @@ import (
 
 // VM est une machine virtuelle
 type VM struct {
-	pc int
-	numReg int
+	pc        int
+	numReg    int
 	numMemReg int
-	regs []int
-	mems []int
-	cycles int
-	prog []int
-	running bool
-	debug bool
+	regs      []int
+	mems      []int
+	cycles    int
+	prog      []int
+	running   bool
+	debug     bool
 	startTime time.Time
 	totalTime time.Duration
 }
@@ -42,10 +42,10 @@ func (vm VM) GetCycles() int { return vm.cycles }
 // GetPC retourne le compteur du programme
 func (vm VM) GetPC() int { return vm.pc }
 
-// GetRegs le contenu des registres 
+// GetRegs le contenu des registres
 func (vm VM) GetRegs() []int { return vm.regs }
 
-// GetMemory le contenu de la mémoire 
+// GetMemory le contenu de la mémoire
 func (vm VM) GetMemory() []int { return vm.mems }
 
 func (vm *VM) fetch() int {
@@ -71,8 +71,15 @@ func (vm VM) showMem() {
 	fmt.Println(res)
 }
 
-func (vm *VM) printPerf() {
-	log.GetLogger().Title(log.INFO, "Performances") 
+// LoadProg charge une liste d'instruction dans le programme de la VM
+func (vm *VM) LoadProg(prog []int) {
+	vm.prog = prog
+	vm.pc = 0
+}
+
+// PrintPerf permet d'afficher un résumé des résultats de performance de la vm
+func (vm *VM) PrintPerf() {
+	log.GetLogger().Title(log.INFO, "Performances")
 	fmt.Printf("Nombre de cycles : %d\n", vm.cycles)
 	fmt.Printf("Effectués en : %s\n", vm.totalTime)
 
@@ -83,19 +90,27 @@ func (vm *VM) printPerf() {
 	fmt.Println("===================")
 }
 
+// GetCyclesPerSec permet de récupérer le nombre d'opérations effectuées
+// en une seconde à partir des données récupérées par la machine virtuelle
+func (vm *VM) GetCyclesPerSec() int {
+	return int(float64(vm.cycles) / vm.totalTime.Seconds())
+}
+
 // Run permet de lancer l'exécution de la machine virtuelle
-func (vm *VM) Run(showRegs bool, showMem bool, debug bool, showPerfs bool) {
+func (vm *VM) Run(showRegs bool, showMem bool, debug bool) {
 	vm.running = true
 	vm.debug = debug
 	vm.startTime = time.Now()
 	for vm.running {
 		vm.Step()
-		if showRegs { vm.showRegs() }
-		if showMem { vm.showMem() }
+		if showRegs {
+			vm.showRegs()
+		}
+		if showMem {
+			vm.showMem()
+		}
 	}
 	vm.totalTime += time.Since(vm.startTime)
-
-	if (showPerfs) { vm.printPerf() }
 }
 
 // RunWithCallback permet de lancer l'exécution de la machine virtuelle
@@ -107,7 +122,7 @@ func (vm *VM) RunWithCallback(callback func()) {
 		vm.Step()
 		//vm.showRegs()
 		//vm.showMem()
-		callback();
+		callback()
 	}
 }
 
