@@ -28,4 +28,7 @@ simji
 pkged.go
 /pkg
 
+### Idea
+.idea/**
+
 # End of https://www.toptal.com/developers/gitignore/api/go
