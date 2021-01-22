@@ -23,8 +23,10 @@ func main() {
 		log.GetLogger().SetLevel(log.INFO)
 	}
 
-	// If we try to launch the GUI
-	if *launchGUI {
+	if *fullHelp {
+		fullUsage()
+	} else if *launchGUI {
+		// If we try to launch the GUI
 		staticFiles := pkger.Dir("/internal/static")
 		log.GetLogger().Info("Launching gui...")
 		// Include static files for packaging

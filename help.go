@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 	"simji/internal/log"
 
 	"github.com/fatih/color"
@@ -14,17 +13,24 @@ func helloWorld() {
 	titleColor := color.New(color.FgHiCyan).Add(color.Underline).Add(color.Bold)
 	detailColor := color.New(color.FgBlue)
 
-	defaultColor.Print("========= ")
+	defaultColor.Println("                      _____ _______  ___    ______")
+	defaultColor.Println("                     / ___//_  _/  |/  /   / /  _/")
+	defaultColor.Println("                     \\__  \\ / // /|_/ /_  / // /")
+	defaultColor.Println("                     ___/ // // /  / / /_/ // / ")
+	defaultColor.Println("                    /____/___/_/  /_/\\____/___/ ")
+	fmt.Println()
+
+	defaultColor.Print("============== ")
 	titleColor.Printf("SIMJI : Simulateur de Jeu d'Instructions ")
-	defaultColor.Print("========= \n")
-	defaultColor.Print("-- Conçut par ")
+	defaultColor.Print("============== \n")
+	defaultColor.Print("-- Designed and Developed by ")
 	detailColor.Print("Alexandre FROEHLICH \n")
-	defaultColor.Println("-- Dans le cadre de l'U.V. 4.5-Architectures numériques")
+	defaultColor.Println("-- For the U.V. 4.5-Architectures numériques class")
 	defaultColor.Print("-- Contact : ")
 	detailColor.Println("nightlyside@gmail.com")
-	defaultColor.Print("-- Site web : ")
+	defaultColor.Print("-- Website : ")
 	detailColor.Println("https://nightlyside.github.io")
-	defaultColor.Println("============================================================")
+	defaultColor.Println("======================================================================")
 	fmt.Print("\n")
 }
 
@@ -34,6 +40,10 @@ func usage() {
 	fmt.Println("             [--assemble | -a] [--disassemble | -da] [--output | -o]")
 	fmt.Println("             \"filename\"")
 	fmt.Println()
+}
+
+func fullUsage() {
+	usage()
 
 	fmt.Println("Some common commands in different situations:")
 	fmt.Println()
@@ -64,8 +74,6 @@ func usage() {
 	fmt.Println("  simji --test\t\tRun the test units for the assembler and vm")
 	fmt.Println("  simji --benchmark\tComputes the number of cycles/second of the vm")
 	fmt.Println()
-
-	os.Exit(2)
 }
 
 func missingFileMessage() {
@@ -81,7 +89,8 @@ var launchGUI = flag.Bool("gui", false, "start the gui application")
 var nbBMRuns = flag.Int("benchmark", 0, "evalue les performances du simulateur")
 var assemble = flag.Bool("assemble", false, "assemble the targeted program")
 var outputFile = flag.String("output", "", "filename of the output file")
-var disassemble = flag.Bool("disassemble", false, "désassemble un fichier binaire")
+var disassemble = flag.Bool("disassemble", false, "disassembly of a binary file")
+var fullHelp = flag.Bool("help", false, "print the full usage of the program")
 
 func init() {
 	flag.Usage = usage
