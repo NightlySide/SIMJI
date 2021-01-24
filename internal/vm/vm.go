@@ -2,11 +2,7 @@ package vm
 
 import (
 	"fmt"
-	"simji/internal/log"
 	"time"
-
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
 )
 
 // VM est une machine virtuelle
@@ -75,19 +71,6 @@ func (vm VM) showMem() {
 func (vm *VM) LoadProg(prog []int) {
 	vm.prog = prog
 	vm.pc = 0
-}
-
-// PrintPerf permet d'afficher un résumé des résultats de performance de la vm
-func (vm *VM) PrintPerf() {
-	log.GetLogger().Title(log.INFO, "Performances")
-	fmt.Printf("Nombre de cycles : %d\n", vm.cycles)
-	fmt.Printf("Effectués en : %s\n", vm.totalTime)
-
-	p := message.NewPrinter(language.French)
-
-	opParSeconde := int64(float64(vm.cycles) / vm.totalTime.Seconds())
-	p.Printf("Perfomances : %d opérations/seconde\n", opParSeconde)
-	fmt.Println("===================")
 }
 
 // GetCyclesPerSec permet de récupérer le nombre d'opérations effectuées

@@ -1,5 +1,5 @@
 APP=simji
-APPDIR=pkg/$(APP)_1.1.0
+APPDIR=pkg/$(APP)_1.2.0
 
 .PHONY: test coverage makefolders copyicons packagefiles gobuild debianbuild clean postclean
 

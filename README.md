@@ -25,6 +25,7 @@
 [**Usage**](#usage)
 
 -   [**Assembly**](#assembly)
+-   [**Disassembly**](#disassembly)
 -   [**Virtual Machine**](#virtual-machine)
 -   [**Graphical User Interface**](#graphical-user-interface)
 
@@ -106,7 +107,55 @@ Excepting the GUI, you will always need to put a path to a file for the sim to w
 
 ### Assembly
 
-(W.I.P.)
+For the following examples we will take this simple assembly programs that puts the number 15 in the first register and prints its value on screen :
+
+```asm
+; program.asm
+add r0, 15, r1
+scall 1
+stop
+```
+
+In order to assemble a program into binary instructions you need to use the `--assemble` flag :
+
+```bash
+# Will print the instructions in the terminal
+./simji --assemble program.asm
+```
+
+You may save the instructions in a binary file as well using the `--output` flag :
+
+```bash
+# Will save the content in a file
+./simji --assemble --output program.bin program.asm
+```
+
+The content of the binary file should look like that :
+
+```
+0x00000000	0x082001e1
+0x00000001	0x90000001
+0x00000002	0x00000000
+```
+
+### Disassembly
+
+The same way you can disassemble a binary file using the `--disassemble` flag :
+
+```bash
+./simji --disassemble program.bin
+```
+
+Which should print something like that in the terminal :
+
+```
+[+] INFO: No output file specified. Printing binary to console.
+add r0, 15, r1
+scall 1
+stop
+```
+
+And likewise you can save the output to an external file using the `--output` flag.
 
 ### Virtual Machine
 

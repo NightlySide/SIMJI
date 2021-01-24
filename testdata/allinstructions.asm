@@ -20,16 +20,24 @@ xor r1, 1,  r2
 xor r1, r2, r2
 ; shifting
 shl r1, 2, r2
+shl r1, r1, r2
 shr r2, 2, r2
+shr r1, r2, r2
 ; comparison
 slt r1, 5, r2
+slt r1, r2, r2
 sle r1, 6, r2
+sle r1, r2, r2
 seq r1, r2, r2
+seq r1, 2, r2
 ; memory
 load r1, r0, r2
+load r1, 0, r2
 store r2, r0, r1
+store r2, 0, r1
 ; jmps
 jmp ENDING_LABEL, r0
+jmp r2, r0
 braz r2, STARTING_LABEL
 branz r0, STARTING_LABEL
 ; system

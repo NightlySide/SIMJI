@@ -14,7 +14,7 @@ import (
 // Benchmark est une structure contenant le résultat
 // d'exécution de la machine virtuelle
 type Benchmark struct {
-	nbRuns          []int
+	nbRuns          int
 	totalTimes      []time.Duration
 	nbCycles        []int
 	nbCyclesPerSecs []float64
@@ -34,6 +34,7 @@ func StartBenchmark(program []int, nbRuns int) Benchmark {
 		machine.LoadProg(program)
 		machine.Run(false, false, false)
 
+		bm.nbRuns++
 		bm.totalTimes = append(bm.totalTimes, machine.totalTime)
 		bm.nbCycles = append(bm.nbCycles, machine.cycles)
 		bm.nbCyclesPerSecs = append(bm.nbCyclesPerSecs, float64(machine.cycles)/machine.totalTime.Seconds())
