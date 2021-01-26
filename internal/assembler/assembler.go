@@ -76,7 +76,7 @@ func StringLinesToInstructions(lines []string) [][]int {
 					break
 				case 3:
 					// r1
-					value, isReg = parseArgument(args[0], labels)
+					value, _ = parseArgument(args[0], labels)
 					numInstr = append(numInstr, value)
 
 					// o

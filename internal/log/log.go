@@ -89,7 +89,6 @@ func (l Log) log(level Level, message string, arg ...interface{}) {
 }
 
 // CaptureOutput permet de capturer la sortie d'une fonction
-// par exemple un print
 func CaptureOutput(f func()) string {
 	// creating a new pipeline
 	reader, writer, err := os.Pipe()

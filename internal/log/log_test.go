@@ -71,7 +71,7 @@ func TestLevelPrinting(t *testing.T) {
 
 	output = CaptureOutput(func() { log.Success("test") })
 	if strings.TrimSpace(output) != "[+] test" {
-		t.Error("Error while formatting log SUCESS")
+		t.Error("Error while formatting log SUCCESS")
 		t.Error(output)
 	}
 }
