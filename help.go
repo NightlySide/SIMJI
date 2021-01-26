@@ -81,16 +81,18 @@ func missingFileMessage() {
 	fmt.Println("Type: simji --help to display the program usage")
 }
 
-var runBinary = flag.Bool("binary", false, "runs a binary file instead of a program file")
-var showRegs = flag.Bool("show-regs", false, "show regs on each step")
-var showMem = flag.Bool("show-mem", false, "show memory on each step")
-var showDebug = flag.Bool("debug", false, "show each instruction in the terminal")
-var launchGUI = flag.Bool("gui", false, "start the gui application")
-var nbBMRuns = flag.Int("benchmark", 0, "evalue les performances du simulateur")
-var assemble = flag.Bool("assemble", false, "assemble the targeted program")
-var outputFile = flag.String("output", "", "filename of the output file")
-var disassemble = flag.Bool("disassemble", false, "disassembly of a binary file")
-var fullHelp = flag.Bool("help", false, "print the full usage of the program")
+var (
+	runBinary   = flag.Bool("binary", false, "runs a binary file instead of a program file")
+	showRegs    = flag.Bool("show-regs", false, "show regs on each step")
+	showMem     = flag.Bool("show-mem", false, "show memory on each step")
+	showDebug   = flag.Bool("debug", false, "show each instruction in the terminal")
+	launchGUI   = flag.Bool("gui", false, "start the gui application")
+	nbBMRuns    = flag.Int("benchmark", 0, "evalue les performances du simulateur")
+	assemble    = flag.Bool("assemble", false, "assemble the targeted program")
+	outputFile  = flag.String("output", "", "filename of the output file")
+	disassemble = flag.Bool("disassemble", false, "disassembly of a binary file")
+	fullHelp    = flag.Bool("help", false, "print the full usage of the program")
+)
 
 func init() {
 	flag.Usage = usage

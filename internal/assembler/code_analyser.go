@@ -28,7 +28,7 @@ func GetHighestRegister(lines []string) int {
 func loadLabels(lines []string) map[string]int {
 	log.GetLogger().Title(log.DEBUG, "Loading Labels Dictionary")
 
-	var labels = make(map[string]int)
+	labels := make(map[string]int)
 	var pc int = 0
 
 	for _, line := range lines {

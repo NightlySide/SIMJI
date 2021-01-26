@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-
 	"simji/internal/assembler"
 	"simji/internal/gui"
 	"simji/internal/log"

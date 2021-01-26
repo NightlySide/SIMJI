@@ -17,7 +17,7 @@ func ShowGUI(staticFiles http.FileSystem) {
 		print("1")
 		log.Fatal(err)
 	}
-	
+
 	bm := newBindingManager(ui)
 	bm.setupBindings()
 

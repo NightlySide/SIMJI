@@ -10,7 +10,6 @@ import (
 func TestLoadFile(t *testing.T) {
 	filename := "../../testdata/allinstructions.asm"
 	lines, err := ProgramFileToStringArray(filename)
-
 	if err != nil {
 		t.Error(err.Error())
 	}

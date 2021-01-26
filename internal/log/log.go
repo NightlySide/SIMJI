@@ -28,8 +28,10 @@ type Log struct {
 	level Level
 }
 
-var once sync.Once
-var instance *Log
+var (
+	once     sync.Once
+	instance *Log
+)
 
 // GetLogger permet de récupérer l'unique instance de logger
 func GetLogger() *Log {

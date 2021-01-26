@@ -43,7 +43,7 @@ func (bm *BindingsManager) loadProgramContent(content string) {
 	for i := range lines {
 		lines[i] = strings.TrimSpace(lines[i])
 	}
-	//numRegs := assembler.GetHighestRegister(lines) + 1
+	// numRegs := assembler.GetHighestRegister(lines) + 1
 	vm := vm.NewVM(32, 1000)
 
 	numInstructions := assembler.StringLinesToInstructions(lines)
@@ -83,13 +83,13 @@ func (bm *BindingsManager) update() {
 	for _, reg := range bm.vm.GetRegs() {
 		regsStr += strconv.Itoa(reg) + ","
 	}
-	regsStr = regsStr[:len(regsStr) - 1] + "]"
+	regsStr = regsStr[:len(regsStr)-1] + "]"
 	bm.ui.Eval("setRegisters(" + regsStr + ")")
 
 	memsStr := "["
 	for _, mem := range bm.vm.GetMemory() {
 		memsStr += strconv.Itoa(mem) + ","
 	}
-	memsStr = memsStr[:len(memsStr) - 1] + "]"
+	memsStr = memsStr[:len(memsStr)-1] + "]"
 	bm.ui.Eval("setMemoryBlocks(" + memsStr + ")")
 }

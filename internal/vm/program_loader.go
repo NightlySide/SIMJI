@@ -13,7 +13,6 @@ import (
 func LoadProgFromFile(filename string) []int {
 	var prog []int
 	content, err := ioutil.ReadFile(filename)
-
 	if err != nil {
 		log.GetLogger().Error(err.Error())
 		os.Exit(1)

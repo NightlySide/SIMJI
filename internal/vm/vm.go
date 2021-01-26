@@ -103,8 +103,8 @@ func (vm *VM) RunWithCallback(callback func()) {
 	vm.debug = false
 	for vm.running {
 		vm.Step()
-		//vm.showRegs()
-		//vm.showMem()
+		// vm.showRegs()
+		// vm.showMem()
 		callback()
 	}
 }
