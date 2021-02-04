@@ -159,20 +159,20 @@ func (vm *VM) eval(instrNum int, imm1 int, o1 int, r1 int, imm2 int, o2 int, r2 
 		// registre sinon immediate
 		if imm2 == 0 {
 			log.GetLogger().Debug("load r%d r%d r%d\n", r1, o2, r2)
-			vm.regs[r2] = vm.mems[r1+vm.regs[o2]]
+			vm.regs[r2] = vm.memory.GetValueFromIndex(r1+vm.regs[o2])
 		} else {
 			log.GetLogger().Debug("load r%d #%d r%d\n", r1, o2, r2)
-			vm.regs[r2] = vm.mems[r1+o2]
+			vm.regs[r2] = vm.memory.GetValueFromIndex(r1+o2)
 		}
 		break
 	case 14:
 		// registre sinon immediate
 		if imm2 == 0 {
 			log.GetLogger().Debug("store r%d r%d r%d\n", r1, o2, r2)
-			vm.mems[vm.regs[r1]+vm.regs[o2]] = vm.regs[r2]
+			vm.memory.SetValueFromIndex(vm.regs[r1]+vm.regs[o2], vm.regs[r2])
 		} else {
 			log.GetLogger().Debug("store r%d #%d r%d\n", r1, o2, r2)
-			vm.mems[vm.regs[r1]+o2] = vm.regs[r2]
+			vm.memory.SetValueFromIndex(vm.regs[r1]+o2, vm.regs[r2])
 		}
 		break
 	case 15:

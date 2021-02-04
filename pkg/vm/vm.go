@@ -1,6 +1,8 @@
 package vm
 
 import (
+	"simji/pkg/cache"
+
 	"fmt"
 	"time"
 )
@@ -11,7 +13,8 @@ type VM struct {
 	numReg    int
 	numMemReg int
 	regs      []int
-	mems      []int
+	cache     *cache.Cache
+	memory	  *cache.Memory
 	cycles    int
 	prog      []int
 	running   bool
@@ -24,7 +27,10 @@ type VM struct {
 func NewVM(numReg int, numMemReg int) VM {
 	vm := VM{numReg: numReg, numMemReg: numMemReg}
 	vm.regs = make([]int, vm.numReg)
-	vm.mems = make([]int, vm.numMemReg)
+	// setting up the cache
+	vm.cache = cache.NewCache(4, 1, 2, 4)
+	vm.memory = cache.NewMemory(1024, 2)
+	vm.cache.SetMemory(vm.memory)
 
 	return vm
 }
@@ -42,7 +48,7 @@ func (vm VM) GetPC() int { return vm.pc }
 func (vm VM) GetRegs() []int { return vm.regs }
 
 // GetMemory le contenu de la mémoire
-func (vm VM) GetMemory() []int { return vm.mems }
+func (vm VM) GetMemory() []int { return vm.memory.GetData() }
 
 func (vm *VM) fetch() int {
 	instruction := vm.prog[vm.pc]
@@ -62,7 +68,7 @@ func (vm VM) showRegs() {
 func (vm VM) showMem() {
 	res := "memory ="
 	for k := 0; k < vm.numMemReg; k++ {
-		res += " " + fmt.Sprintf("%04x", vm.mems[k])
+		res += " " + fmt.Sprintf("%04x", vm.memory.GetData()[k])
 	}
 	fmt.Println(res)
 }
