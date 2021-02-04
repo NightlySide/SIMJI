@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"simji/internal/log"
+	"simji/pkg/log"
 
 	"github.com/fatih/color"
 )

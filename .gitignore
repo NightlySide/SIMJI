@@ -9,6 +9,7 @@
 *.dll
 *.so
 *.dylib
+./*.bin
 simji
 
 # Test binary, built with `go test -c`
@@ -26,7 +27,6 @@ simji
 
 ### Dist
 pkged.go
-/pkg
 
 ### Idea
 .idea/**
