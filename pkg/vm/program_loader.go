@@ -1,9 +1,9 @@
 package vm
 
 import (
+	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"os"
-	"simji/pkg/log"
 	"strconv"
 	"strings"
 )
@@ -14,7 +14,7 @@ func LoadProgFromFile(filename string) []int {
 	var prog []int
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
-		log.GetLogger().Error(err.Error())
+		log.Error().Msgf("LoadProgFromFile - %s", err.Error())
 		os.Exit(1)
 	}
 
@@ -28,7 +28,7 @@ func LoadProgFromFile(filename string) []int {
 		instru = strings.Replace(instru, "0x", "", -1)
 		hexInstr, err := strconv.ParseUint(instru, 16, 64)
 		if err != nil {
-			log.GetLogger().Error(err.Error())
+			log.Error().Msgf("LoadProgFromFile - %s", err.Error())
 		}
 
 		prog = append(prog, int(hexInstr))

@@ -1,10 +1,11 @@
 package cmd
 
 import (
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"os"
 	"runtime/pprof"
 	"simji/pkg/vm"
-	"simji/pkg/log"
 
 	"github.com/spf13/cobra"
 )
@@ -31,17 +32,18 @@ Example:
   ./simji run --debug testdata/program.bin
   ./simji run --benchmark 20000 testdata/program.bin`,
 	Run: func(cmd *cobra.Command, args []string) {
+		initLogger()
+		if vmDebug {
+			zerolog.SetGlobalLevel(zerolog.DebugLevel)
+		}
+
 		if vmProfiling != "" {
 			f, err := os.Create(vmProfiling)
 			if err != nil {
-				log.GetLogger().Error(err.Error())
+				log.Error().Msgf("cmd/run - %s", err.Error())
 			}
 			_ = pprof.StartCPUProfile(f)
 			defer pprof.StopCPUProfile()
-		}
-
-		if vmDebug {
-			log.GetLogger().SetLevel(log.DEBUG)
 		}
 
 		if nbBMRuns == 0 {

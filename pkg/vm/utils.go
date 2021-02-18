@@ -3,8 +3,8 @@ package vm
 import (
 	"bufio"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"os"
-	"simji/pkg/log"
 )
 
 func getNumberInput() int {
@@ -20,7 +20,7 @@ func getNumberInput() int {
 		}
 
 		stdin.ReadString('\n')
-		log.GetLogger().Error("Input not valid. Please enter a NUMBER.\n")
+		log.Error().Msg("Input not valid. Please enter a NUMBER.")
 	}
 
 	return value

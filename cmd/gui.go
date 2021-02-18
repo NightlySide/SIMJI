@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/markbates/pkger"
+	"github.com/rs/zerolog/log"
 	"simji/pkg/gui"
-	"simji/pkg/log"
 
 	"github.com/spf13/cobra"
 )
@@ -20,8 +20,9 @@ state and the memory values.
 Example:
   ./simji gui`,
 	Run: func(cmd *cobra.Command, args []string) {
+		initLogger()
 		staticFiles := pkger.Dir("/pkg/static")
-		log.GetLogger().Info("Launching gui...")
+		log.Info().Msg("Launching gui...")
 		// Include static files for packaging
 		gui.ShowGUI(staticFiles)
 	},

@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"fmt"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"os"
 	"runtime/pprof"
 	"simji/pkg/assembler"
-	"simji/pkg/log"
 
 	"github.com/spf13/cobra"
 )
@@ -34,17 +34,15 @@ Example:
 		if assembleProfiling != "" {
 			f, err := os.Create(assembleProfiling)
 			if err != nil {
-				log.GetLogger().Error(err.Error())
+				log.Error().Msgf("cmd/assemble - %s", err.Error())
 			}
-			err = pprof.StartCPUProfile(f)
-			if err != nil {
-				log.GetLogger().Error(err.Error())
-			}
+			_ = pprof.StartCPUProfile(f)
 			defer pprof.StopCPUProfile()
 		}
 
+		initLogger()
 		if assembleDebug {
-			log.GetLogger().SetLevel(log.DEBUG)
+			zerolog.SetGlobalLevel(zerolog.DebugLevel)
 		}
 
 		lines, _ := assembler.ProgramFileToStringArray(args[0])
@@ -53,11 +51,11 @@ Example:
 
 		// no output file specified -> print in console
 		if assembleOutputPath == "" {
-			log.GetLogger().Info("No output file specified. Printing binary to console.")
+			log.Info().Msg("No output file specified. Printing binary to console.")
 			assembler.PrintProgram(prog)
 		} else {
 			// save to file
-			log.GetLogger().Info(fmt.Sprintf("Exporting binary data to file: %s", assembleOutputPath))
+			log.Info().Msgf("Exporting binary data to file: %s", assembleOutputPath)
 			_ = assembler.ExportBinaryToFile(prog, assembleOutputPath)
 		}
 	},

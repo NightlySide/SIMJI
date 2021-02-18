@@ -1,7 +1,7 @@
 package assembler
 
 import (
-	"simji/pkg/log"
+	"github.com/rs/zerolog/log"
 	"strconv"
 	"strings"
 )
@@ -26,7 +26,7 @@ func GetHighestRegister(lines []string) int {
 }
 
 func loadLabels(lines []string) map[string]int {
-	log.GetLogger().Title(log.DEBUG, "Loading Labels Dictionary")
+	log.Debug().Msg("Loading Labels Dictionary")
 
 	labels := make(map[string]int)
 	var pc int = 0
@@ -35,7 +35,10 @@ func loadLabels(lines []string) map[string]int {
 		isLabel, label, rest := containsLabel(line)
 		// on a trouvé un label
 		if isLabel {
-			log.GetLogger().Debug("Found label: " + label + "\twith address: " + strconv.Itoa(pc) + "\n")
+			log.Debug().
+				Str("label", label).
+				Int("addr", pc).
+				Msg("Found label")
 			// on l'ajoute au dict des labels
 			labels[label] = pc
 		}

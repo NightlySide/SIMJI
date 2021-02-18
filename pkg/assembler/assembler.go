@@ -1,9 +1,8 @@
 package assembler
 
 import (
-	"fmt"
+	"github.com/rs/zerolog/log"
 	"io/ioutil"
-	"simji/pkg/log"
 	"strings"
 )
 
@@ -11,7 +10,7 @@ import (
 func ProgramFileToStringArray(filename string) ([]string, error) {
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
-		log.GetLogger().Error(err.Error())
+		log.Error().Msgf("ProgramFileToStringArray: %s", err.Error())
 		return []string{}, err
 	}
 
@@ -27,7 +26,7 @@ func StringLinesToInstructions(lines []string) [][]int {
 	var numInstructions [][]int
 	labels := loadLabels(lines)
 
-	log.GetLogger().Title(log.DEBUG, "Translating ASM to hex instr")
+	log.Debug().Msg("Translating ASM to hex instr")
 
 	var pc int
 
@@ -37,14 +36,11 @@ func StringLinesToInstructions(lines []string) [][]int {
 
 		// si la ligne n'est pas vide et qu'il a une instruction
 		if rest != "" {
-			log.GetLogger().Debug("%08x\t", pc)
-
 			opName, args := splitInstruction(rest)
 
 			var numInstr []int
 			// on ajoute le numéro d'instruction depuis la liste
 			numInstr = append(numInstr, OpCodes[opName])
-			log.GetLogger().Debug(opName + "\t")
 
 			var value int
 			var isReg bool
@@ -94,16 +90,15 @@ func StringLinesToInstructions(lines []string) [][]int {
 					numInstr = append(numInstr, value)
 					break
 				default:
-					log.GetLogger().Error("Wrong number of arguments !")
+					log.Error().Int("nb_args", len(args)).Msg("Wrong number of arguments!")
 					break
 				}
 			}
 
-			spacer := "\t"
-			if opName == "scall" {
-				spacer = "\t\t"
-			}
-			log.GetLogger().Debug(fmt.Sprint(numInstr) + spacer + strings.Join(args, " ") + "\n")
+			log.Debug().
+				Int("pc", pc).
+				Ints("instr", numInstr).
+				Msg(strings.Join(args, " "))
 
 			numInstructions = append(numInstructions, numInstr)
 			pc++
@@ -115,13 +110,11 @@ func StringLinesToInstructions(lines []string) [][]int {
 
 // ComputeHexInstructions traduit les instructions machines en code hexadécimal
 func ComputeHexInstructions(numInstructions [][]int) []int {
-	log.GetLogger().Title(log.DEBUG, "Translate to HEX instructions")
+	log.Debug().Msg("Translate to HEX instructions")
 
 	var decInstructions []int
 
 	for pc, instr := range numInstructions {
-		log.GetLogger().Debug("%08x\t", pc)
-
 		decInstr := instr[0] << 27
 
 		switch len(instr) {
@@ -150,7 +143,7 @@ func ComputeHexInstructions(numInstructions [][]int) []int {
 		}
 
 		decInstructions = append(decInstructions, decInstr)
-		log.GetLogger().Debug("0x%08x\n", decInstr)
+		log.Debug().Int("pc", pc).Msgf("Hex: 0x%08x\n", decInstr)
 	}
 
 	return decInstructions

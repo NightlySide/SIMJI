@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"simji/pkg/log"
+	"github.com/rs/zerolog/log"
 
 	"github.com/fatih/color"
 )
@@ -77,7 +77,7 @@ func fullUsage() {
 }
 
 func missingFileMessage() {
-	log.GetLogger().Error("Missing input file\n")
+	log.Error().Msg("Missing input file\n")
 	fmt.Println("Type: simji --help to display the program usage")
 }
 

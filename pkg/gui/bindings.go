@@ -2,8 +2,8 @@ package gui
 
 import (
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"simji/pkg/assembler"
-	"simji/pkg/log"
 	"simji/pkg/vm"
 	"strconv"
 	"strings"
@@ -26,7 +26,7 @@ func newBindingManager(ui lorca.UI) *BindingsManager {
 func (bm *BindingsManager) setupBindings() {
 	// When the UI is ready
 	bm.ui.Bind("start", func() {
-		log.GetLogger().Info("UI is ready")
+		log.Info().Msg("UI is ready")
 		bm.ui.Eval("consoleHelloWorld()")
 	})
 

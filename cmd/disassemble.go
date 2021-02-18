@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"simji/pkg/assembler"
-	"simji/pkg/log"
 	"simji/pkg/vm"
 
 	"github.com/spf13/cobra"
@@ -29,15 +29,17 @@ Example:
 		prog := vm.LoadProgFromFile(args[0])
 		desProg := vm.Disassemble(prog)
 
+		initLogger()
+
 		// no output file specified -> print in console
 		if disassembleOutputPath == "" {
-			log.GetLogger().Info("No output file specified. Printing binary to console.")
+			log.Info().Msg("No output file specified. Printing binary to console.")
 			for _, line := range desProg {
 				fmt.Println(line)
 			}
 		} else {
 			// save to file
-			log.GetLogger().Info(fmt.Sprintf("Exporting disassembled data to file: %s", disassembleOutputPath))
+			log.Info().Msgf("Exporting disassembled data to file: %s", disassembleOutputPath)
 			_ = assembler.ExportProgramToFile(desProg, disassembleOutputPath)
 		}
 	},

@@ -110,15 +110,15 @@ func (bm *Benchmark) standardDeviation() float64 {
 
 // PrintResults permet d'afficher les résultat d'un benchmark
 func (bm *Benchmark) PrintResults() {
-	log.GetLogger().Title(log.INFO, "Benchmark results")
+	fmt.Println("===Benchmark results===")
 
 	pp := message.NewPrinter(language.French)
 
-	pp.Printf(" Moyenne:\t%d op/sec\n", int(bm.average()))
-	pp.Printf(" Médiane:\t%d op/sec\n", int(bm.median()))
-	pp.Printf(" Ecart-type:\t%d op/sec\n", int(bm.standardDeviation()))
-	pp.Printf(" Top 1%%:\t%d op/sec\n", int(bm.topOnePercent()))
-	pp.Printf(" Bottom 1%%:\t%d op/sec\n", int(bm.bottomOnePercent()))
+	_, _ = pp.Printf(" Moyenne:\t%d op/sec\n", int(bm.average()))
+	_, _ = pp.Printf(" Médiane:\t%d op/sec\n", int(bm.median()))
+	_, _ = pp.Printf(" Ecart-type:\t%d op/sec\n", int(bm.standardDeviation()))
+	_, _ = pp.Printf(" Top 1%%:\t%d op/sec\n", int(bm.topOnePercent()))
+	_, _ = pp.Printf(" Bottom 1%%:\t%d op/sec\n", int(bm.bottomOnePercent()))
 
 	fmt.Println("=======================")
 }
