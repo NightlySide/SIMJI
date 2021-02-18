@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"runtime/pprof"
 	"simji/pkg/assembler"
 	"simji/pkg/log"
 
@@ -10,6 +12,7 @@ import (
 
 var assembleOutputPath string
 var assembleDebug bool
+var assembleProfiling string
 
 // assembleCmd represents the assemble command
 var assembleCmd = &cobra.Command{
@@ -28,6 +31,18 @@ Example:
   ./simji assemble -d testdata/syracuse.asm
   ./simji assemble --output=program.bin testdata/syracuse.asm`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if assembleProfiling != "" {
+			f, err := os.Create(assembleProfiling)
+			if err != nil {
+				log.GetLogger().Error(err.Error())
+			}
+			err = pprof.StartCPUProfile(f)
+			if err != nil {
+				log.GetLogger().Error(err.Error())
+			}
+			defer pprof.StopCPUProfile()
+		}
+
 		if assembleDebug {
 			log.GetLogger().SetLevel(log.DEBUG)
 		}
@@ -54,4 +69,5 @@ func init() {
 	// Local flags definition
 	assembleCmd.Flags().StringVarP(&assembleOutputPath, "output", "o", "", "Exports hex instructions to binary file")
 	assembleCmd.Flags().BoolVarP(&assembleDebug, "debug", "d", false, "Print debugging logs of the assembly process")
+	assembleCmd.Flags().StringVarP(&assembleProfiling, "cpuprofile", "p", "", "Exports profiling data into the specified file")
 }

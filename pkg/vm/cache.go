@@ -8,20 +8,20 @@ package vm
 // m = log2(M) number of physical (main memory) address bits
 //----------------------------//
 type Cache struct {
-	sets []Set
+	sets []*Set
 	memory *Memory
 }
 
 func NewCache(nbSets int, nbLines int, nbMots int, sizeMot int) *Cache {
 	c := &Cache{}
 	for i := 0; i < nbSets; i++ {
-		c.sets = append(c.sets, *NewSet(nbLines, nbMots, sizeMot))
+		c.sets = append(c.sets, NewSet(nbLines, nbMots, sizeMot))
 	}
 	c.memory = NewMemory(1024)
 	return c
 }
 
-func (c *Cache) InCache(addr int) (bool, Line) {
+func (c *Cache) InCache(addr int) (bool, *Line) {
 	tag, setID, _ := decodeAddress(addr)
 
 	set := c.sets[setID]
@@ -33,7 +33,7 @@ func (c *Cache) InCache(addr int) (bool, Line) {
 		}
 	}
 
-	return false, Line{}
+	return false, nil
 }
 
 func (c *Cache) Read(addr int) int {
@@ -65,7 +65,7 @@ func decodeAddress(addr int) (int, int, int) {
 
 	tag			= (addr & 0xFFFFF000) >> (4*3)
 	setId	    = (addr & 0x00000FF0) >> (4*1) 
-	blockOffset = (addr & 0x0000000F)
+	blockOffset =  addr & 0x0000000F
 
 	return tag, setId, blockOffset
 }
@@ -73,13 +73,13 @@ func decodeAddress(addr int) (int, int, int) {
 // --------------- SET --------------
 
 type Set struct {
-	lines []Line
+	lines []*Line
 }
 
 func NewSet(nbLines int, nbMots int, sizeMot int) *Set {
 	s := &Set{}
 	for i := 0; i < nbLines; i++ {
-		s.lines = append(s.lines, *NewLine(nbMots, sizeMot))
+		s.lines = append(s.lines, NewLine(nbMots, sizeMot))
 	}
 	return s
 }

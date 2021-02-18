@@ -46,6 +46,11 @@ func (l *Log) SetLevel(newLevel Level) {
 	l.level = newLevel
 }
 
+// GetLevel permet de récupérer le niveau de log
+func (l *Log) GetLevel() Level {
+	return l.level
+}
+
 // Debug permet de logger un message de débug
 func (l Log) Debug(message string, arg ...interface{}) {
 	l.log(DEBUG, message, arg...)

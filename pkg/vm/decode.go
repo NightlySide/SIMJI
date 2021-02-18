@@ -1,12 +1,14 @@
 package vm
 
 import (
-	"fmt"
 	"simji/pkg/log"
 )
 
 func decode(instruction int) (int, int, int, int, int, int, int, int, int) {
-	log.GetLogger().Debug(fmt.Sprintf("Decoding : %08x  -  ", instruction))
+	logger := log.GetLogger()
+	if logger.GetLevel() <= log.DEBUG {
+		logger.Debug("Decoding : %08x  -  ", instruction)
+	}
 	instrNum := (instruction & 0xF8000000) >> 27
 	imm1 := (instruction & 0x04000000) >> 26
 	o1 := (instruction & 0x03FFFFE0) >> 5

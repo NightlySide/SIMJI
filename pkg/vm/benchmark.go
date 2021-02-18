@@ -5,6 +5,7 @@ import (
 	"math"
 	"simji/pkg/log"
 	"sort"
+	"sync"
 	"time"
 
 	"golang.org/x/text/language"
@@ -14,6 +15,7 @@ import (
 // Benchmark est une structure contenant le résultat
 // d'exécution de la machine virtuelle
 type Benchmark struct {
+	bmLock			sync.Mutex
 	nbRuns          int
 	totalTimes      []time.Duration
 	nbCycles        []int
@@ -24,21 +26,41 @@ type Benchmark struct {
 // d'instructions et retourne un objet capable de faire les statistiques
 func StartBenchmark(program []int, nbRuns int) Benchmark {
 	var bm Benchmark
-	var machine VM
+	bm.totalTimes = make([]time.Duration, nbRuns)
+	bm.nbCycles = make([]int, nbRuns)
+	bm.nbCyclesPerSecs = make([]float64, nbRuns)
 	var bar log.Bar
 
 	bar.NewOption(0, nbRuns)
-	for i := 0; i < nbRuns; i++ {
-		bar.Play(i + 1)
-		machine = NewVM(32, 1000)
-		machine.LoadProg(program)
-		machine.Run(false, false, false)
 
-		bm.nbRuns++
-		bm.totalTimes = append(bm.totalTimes, machine.totalTime)
-		bm.nbCycles = append(bm.nbCycles, machine.cycles)
-		bm.nbCyclesPerSecs = append(bm.nbCyclesPerSecs, float64(machine.cycles)/machine.totalTime.Seconds())
+	// On crée 12 workers
+	c := make(chan int, nbRuns)
+	var w sync.WaitGroup
+	for k := 0; k < 12; k ++ {
+		w.Add(1)
+		go func() {
+			for i := range c {
+				bar.PlayNext()
+				machine := NewVM(32, 1000)
+				machine.LoadProg(program)
+				machine.Run(false, false, false)
+
+				bm.bmLock.Lock()
+				bm.nbRuns++
+				bm.totalTimes[i] = machine.totalTime
+				bm.nbCycles[i] = machine.cycles
+				bm.nbCyclesPerSecs[i] = float64(machine.cycles)/machine.totalTime.Seconds()
+				bm.bmLock.Unlock()
+			}
+			w.Done()
+		}()
 	}
+
+	for i := 0; i < nbRuns; i++ {
+		c <- i
+	}
+	close(c)
+	w.Wait()
 	bar.Finish()
 
 	// sorting results

@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"os"
+	"runtime/pprof"
 	"simji/pkg/vm"
 	"simji/pkg/log"
 
@@ -9,6 +11,7 @@ import (
 
 var vmDebug bool
 var nbBMRuns int64
+var vmProfiling string
 
 // runCmd represents the run command
 var runCmd = &cobra.Command{
@@ -28,6 +31,15 @@ Example:
   ./simji run --debug testdata/program.bin
   ./simji run --benchmark 20000 testdata/program.bin`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if vmProfiling != "" {
+			f, err := os.Create(vmProfiling)
+			if err != nil {
+				log.GetLogger().Error(err.Error())
+			}
+			_ = pprof.StartCPUProfile(f)
+			defer pprof.StopCPUProfile()
+		}
+
 		if vmDebug {
 			log.GetLogger().SetLevel(log.DEBUG)
 		}
@@ -52,4 +64,5 @@ func init() {
 
 	runCmd.Flags().BoolVarP(&vmDebug, "debug", "d", false, "Print debug infos during the execution")
 	runCmd.Flags().Int64VarP(&nbBMRuns, "benchmark", "b", 0, "Benchmark the VM by launching a program N times")
+	runCmd.Flags().StringVarP(&vmProfiling, "cpuprofile", "p", "", "Exports profiling data into the specified file")
 }

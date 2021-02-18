@@ -45,6 +45,11 @@ func (bar *Bar) Play(current int) {
 	fmt.Printf("\r[%-50s]%3d%% %8d/%d", bar.rate, bar.percent, bar.current, bar.total)
 }
 
+// PlayNext permet d'afficher la barre au prochain tick
+func (bar *Bar) PlayNext() {
+	bar.Play(bar.current + 1)
+}
+
 // Finish permet d'afficher une nouvelle ligne pour éviter les artefacts graphiques
 func (bar *Bar) Finish() {
 	fmt.Println()
