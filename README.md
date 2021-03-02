@@ -5,6 +5,7 @@
 <a href="https://codecov.io/gh/NightlySide/SIMJI"><img src="https://codecov.io/gh/NightlySide/SIMJI/branch/main/graph/badge.svg?token=SRHAZ1FOAY" alt="codecov.io"></a>
 <a href="https://codeclimate.com/github/NightlySide/SIMJI/maintainability"><img src="https://api.codeclimate.com/v1/badges/90f6fce0f239c87d4d21/maintainability" alt="Maintainability"></a>
 <a href="https://goreportcard.com/report/github.com/Nightlyside/SIMJI"><img alt="Go report card" src="https://goreportcard.com/badge/github.com/Nightlyside/SIMJI"></a>
+<a href="https://pkg.go.dev/github.com/Nightlyside/simji#section-directories"><img src="https://pkg.go.dev/badge/github.com/Nightlyside/simji#section-directories.svg" alt="Go Reference"></a>
 </div>
 
 <p align="center">
@@ -187,6 +188,12 @@ From this interface you can load the program into the buffer (the editor in the 
 Once you are happy with the program click the "Load Buffer" button which will send the program contents to the simulator for execution.
 
 The you can execute the program step by step or do a full run.
+
+## Documentation
+
+The documentation is available here: [https://pkg.go.dev/github.com/Nightlyside/simji](https://pkg.go.dev/github.com/Nightlyside/simji#section-directories).
+
+You might need to expand the directories in order to follow the documentation for each package making this project.
 
 ## Project motivations
 
