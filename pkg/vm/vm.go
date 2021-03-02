@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"github.com/rs/zerolog/log"
 	"simji/pkg/cache"
 
 	"fmt"
@@ -48,13 +49,21 @@ func (vm VM) GetPC() int { return vm.pc }
 func (vm VM) GetRegs() []int { return vm.regs }
 
 // GetMemory le contenu de la mémoire
-func (vm VM) GetMemory() []int { return vm.memory.GetData() }
+func (vm VM) GetMemory() []*int { return vm.memory.GetData() }
 
 func (vm *VM) fetch() int {
-	instruction := vm.prog[vm.pc]
-	vm.pc++
-	vm.cycles++
-	return instruction
+	// if the vm can fetch the instruction
+	if vm.pc < len(vm.prog) {
+		instruction := vm.prog[vm.pc]
+		vm.pc++
+		vm.cycles++
+		return instruction
+	}
+
+	// else we are at the end of the program
+	log.Error().Msg("Reached end of program without a 'stop' instruction. (You might have forgotten to include one?)")
+	vm.running = false
+	return -1
 }
 
 func (vm VM) showRegs() {
@@ -62,7 +71,7 @@ func (vm VM) showRegs() {
 	for k := 0; k < vm.numReg; k++ {
 		res += " " + fmt.Sprintf("%04x", vm.regs[k])
 	}
-	fmt.Println(res)
+	log.Info().Msg(res)
 }
 
 func (vm VM) showMem() {
@@ -118,5 +127,7 @@ func (vm *VM) RunWithCallback(callback func()) {
 // Step permet de faire une itération du programme
 func (vm *VM) Step() {
 	instruction := vm.fetch()
-	vm.eval(decode(instruction))
+	if instruction != -1 {
+		vm.eval(decode(instruction))
+	}
 }

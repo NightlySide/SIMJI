@@ -1,5 +1,7 @@
 package cache
 
+import "github.com/rs/zerolog/log"
+
 // Cache is a structure containing memory cache data
 type Cache struct {
 	sets []Set
@@ -52,16 +54,21 @@ func (c *Cache) InCache(addr int) (bool, Line) {
 func (c *Cache) Read(addr int) int {
 	isInCache, line := c.InCache(addr)
 	tag, setID, blockOffset := DecodeAddress(addr)
+	log.Debug().Int("tag", tag).Int("setID", setID).Int("blockoffset", blockOffset).Msg("[Cache] Reading data")
 
 	// if in the cache, just send the value
-	if isInCache { return line.data[blockOffset].data }
+	if isInCache {
+		log.Debug().Msg("[Cache] Cache hit!")
+		return line.data[blockOffset].data
+	}
+	log.Debug().Msg("[Cache] Cache miss...")
 
 	// if the mot is not in cache
 	// there is a reading burst
 	mots := c.memory.BurstRead(addr, c.wordsNb)
 	for k, mot := range mots {
 		// writing each word in the cache
-		c.Write(EncodeAddress(tag, setID, k), mot)
+		c.Write(EncodeAddress(tag, setID, k), *mot)
 	}
 	return c.memory.Read(addr)
 }
@@ -69,6 +76,7 @@ func (c *Cache) Read(addr int) int {
 // Write writes some data in a specific address in the cache
 func (c *Cache) Write(addr int, data int) {
 	tag, setID, blockOffset := DecodeAddress(addr)
+	log.Debug().Int("tag", tag).Int("setID", setID).Int("blockoffset", blockOffset).Msg("[Cache] Writing data")
 
 	set := c.sets[setID]
 	var line Line
@@ -77,6 +85,7 @@ func (c *Cache) Write(addr int, data int) {
 		if line.valid == 1 {
 			// if the tag was already registered
 			if line.tag == tag {
+				log.Debug().Msg("[Cache] Data was already in the cache, updating..")
 				line.data[blockOffset].data = data
 				set.lastLineWritten = k
 				return
@@ -85,6 +94,7 @@ func (c *Cache) Write(addr int, data int) {
 	}
 
 	// else the tag wasn't registered
+	log.Debug().Msg("[Cache] The tag wasn't registered, creating new line")
 	pline := NewLine(c.wordsNb, c.wordSize)
 	pline.valid = 1
 	pline.data[blockOffset].data = data

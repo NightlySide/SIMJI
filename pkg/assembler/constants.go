@@ -3,7 +3,7 @@ package assembler
 // OpCodes représente tous les codes associés aux instructions
 var OpCodes = map[string]int{
 	"stop": 0, "add": 1,
-	"sub": 2, "mult": 3,
+	"sub": 2, "mul": 3,
 	"div": 4, "and": 5,
 	"or": 6, "xor": 7,
 	"shl": 8, "shr": 9,

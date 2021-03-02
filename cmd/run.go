@@ -11,6 +11,8 @@ import (
 )
 
 var vmDebug bool
+var vmShowRegs bool
+var vmShowMem bool
 var nbBMRuns int64
 var vmProfiling string
 
@@ -51,7 +53,7 @@ Example:
 
 			vm := vm.NewVM(32, 1000)
 			vm.LoadProg(prog)
-			vm.Run(false, false, vmDebug)
+			vm.Run(vmShowRegs, false, vmDebug)
 		} else {
 			prog := vm.LoadProgFromFile(args[0])
 
@@ -65,6 +67,8 @@ func init() {
 	rootCmd.AddCommand(runCmd)
 
 	runCmd.Flags().BoolVarP(&vmDebug, "debug", "d", false, "Print debug infos during the execution")
+	runCmd.Flags().BoolVarP(&vmShowRegs, "registers", "r", false, "Print registers value for each step")
+	runCmd.Flags().BoolVarP(&vmShowMem, "memory", "m", false, "Print memory blocks value for each step")
 	runCmd.Flags().Int64VarP(&nbBMRuns, "benchmark", "b", 0, "Benchmark the VM by launching a program N times")
 	runCmd.Flags().StringVarP(&vmProfiling, "cpuprofile", "p", "", "Exports profiling data into the specified file")
 }

@@ -3,6 +3,7 @@ package assembler
 import (
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -23,6 +24,7 @@ func ProgramFileToStringArray(filename string) ([]string, error) {
 
 // StringLinesToInstructions traduit des instructions asm en instructions machine
 func StringLinesToInstructions(lines []string) [][]int {
+	var hasStop bool
 	var numInstructions [][]int
 	labels := loadLabels(lines)
 
@@ -30,13 +32,22 @@ func StringLinesToInstructions(lines []string) [][]int {
 
 	var pc int
 
-	for _, line := range lines {
+	for numLine, line := range lines {
 		_, _, rest := containsLabel(line)
 		_, _, rest = containsComment(rest)
 
 		// si la ligne n'est pas vide et qu'il a une instruction
 		if rest != "" {
 			opName, args := splitInstruction(rest)
+
+			// on vérifie que l'instruction existe sinon on crash
+			if _, ok := OpCodes[opName]; !ok {
+				log.Error().
+					Str("opName", opName).
+					Int("line", numLine + 1).
+					Msg("Instruction not recognized")
+				os.Exit(1)
+			} else if opName == "stop" { hasStop = true }
 
 			var numInstr []int
 			// on ajoute le numéro d'instruction depuis la liste
@@ -103,6 +114,10 @@ func StringLinesToInstructions(lines []string) [][]int {
 			numInstructions = append(numInstructions, numInstr)
 			pc++
 		}
+	}
+
+	if !hasStop {
+		log.Warn().Msg("Program has no 'stop' instruction. It may cause unexpected behaviours.")
 	}
 
 	return numInstructions
