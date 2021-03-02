@@ -1,7 +1,7 @@
 package vm
 
 import (
-	"simji/pkg/assembler"
+	"github.com/Nightlyside/simji/pkg/assembler"
 	"strings"
 	"testing"
 )

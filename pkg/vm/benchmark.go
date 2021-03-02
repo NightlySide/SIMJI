@@ -2,8 +2,8 @@ package vm
 
 import (
 	"fmt"
+	"github.com/Nightlyside/simji/pkg/log"
 	"math"
-	"simji/pkg/log"
 	"sort"
 	"sync"
 	"time"

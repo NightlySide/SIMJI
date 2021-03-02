@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/markbates/pkger"
 	"github.com/rs/zerolog/log"
-	"simji/pkg/gui"
+	"github.com/Nightlyside/simji/pkg/gui"
 
 	"github.com/spf13/cobra"
 )

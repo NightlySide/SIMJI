@@ -2,7 +2,7 @@ package vm
 
 import (
 	"github.com/rs/zerolog/log"
-	"simji/pkg/cache"
+	"github.com/Nightlyside/simji/pkg/cache"
 
 	"fmt"
 	"time"

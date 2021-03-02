@@ -2,7 +2,7 @@ package assembler
 
 import (
 	"os"
-	"simji/pkg/log"
+	"github.com/Nightlyside/simji/pkg/log"
 	"testing"
 )
 

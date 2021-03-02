@@ -3,8 +3,8 @@ package gui
 import (
 	"fmt"
 	"github.com/rs/zerolog/log"
-	"simji/pkg/assembler"
-	"simji/pkg/vm"
+	"github.com/Nightlyside/simji/pkg/assembler"
+	"github.com/Nightlyside/simji/pkg/vm"
 	"strconv"
 	"strings"
 

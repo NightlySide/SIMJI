@@ -1,6 +1,6 @@
 package main
 
-import "simji/cmd"
+import "github.com/Nightlyside/simji/cmd"
 
 func main() {
 	cmd.Execute()

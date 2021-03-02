@@ -5,7 +5,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"os"
 	"runtime/pprof"
-	"simji/pkg/assembler"
+	"github.com/Nightlyside/simji/pkg/assembler"
 
 	"github.com/spf13/cobra"
 )

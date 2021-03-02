@@ -1,7 +1,7 @@
 package vm
 
 import (
-	"simji/pkg/log"
+	"github.com/Nightlyside/simji/pkg/log"
 	"strings"
 	"testing"
 	"time"
