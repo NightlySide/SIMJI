@@ -109,7 +109,7 @@ func StringLinesToInstructions(lines []string) [][]int {
 			log.Debug().
 				Int("pc", pc).
 				Ints("instr", numInstr).
-				Msg(strings.Join(args, " "))
+				Msg(opName + " " + strings.Join(args, " "))
 
 			numInstructions = append(numInstructions, numInstr)
 			pc++
@@ -158,7 +158,7 @@ func ComputeHexInstructions(numInstructions [][]int) []int {
 		}
 
 		decInstructions = append(decInstructions, decInstr)
-		log.Debug().Int("pc", pc).Msgf("Hex: 0x%08x\n", decInstr)
+		log.Debug().Int("pc", pc).Msgf("Hex: 0x%08x", decInstr)
 	}
 
 	return decInstructions

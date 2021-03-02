@@ -11,7 +11,7 @@ import (
 // guiCmd represents the gui command
 var guiCmd = &cobra.Command{
 	Use:   "gui",
-	Short: "Lauch the graphical interface",
+	Short: "Launch the graphical interface",
 	Long: `========================== Help: GUI command =========================
 Launches the graphical interface to edit, assemble and run
 MIPS-assembly files. On other tabs one can see the registers
