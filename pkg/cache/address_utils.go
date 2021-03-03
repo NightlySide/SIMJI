@@ -24,8 +24,8 @@ func EncodeAddress(tag int, setID int, blockOffset int) int {
 func (c *Cache) AddressFromIndex(index int) int {
 	var tag, setID, blockOffset int
 
-	setID = (index / (c.wordSize * c.wordsNb * c.linesNb)) % c.setsNb
-	tag = index / (c.wordSize * c.wordsNb * c.linesNb)
+	setID = (index / c.wordsNb ) % c.setsNb
+	tag = index / c.wordsNb
 	blockOffset = index % c.wordsNb
 
 	return EncodeAddress(tag, setID, blockOffset)

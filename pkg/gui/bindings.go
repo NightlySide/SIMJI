@@ -88,7 +88,7 @@ func (bm *BindingsManager) update() {
 
 	memsStr := "["
 	for _, mem := range bm.vm.GetMemory() {
-		memsStr += strconv.Itoa(*mem) + ","
+		memsStr += strconv.Itoa(mem) + ","
 	}
 	memsStr = memsStr[:len(memsStr)-1] + "]"
 	bm.ui.Eval("setMemoryBlocks(" + memsStr + ")")

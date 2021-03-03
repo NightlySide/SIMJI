@@ -35,10 +35,10 @@ func (vm *VM) eval(instrNum int, imm1 int, o1 int, r1 int, imm2 int, o2 int, r2 
 	case 3:
 		// registre sinon immediate
 		if imm2 == 0 {
-			log.Debug().Msgf("mult r%d r%d r%d", r1, o2, r2)
+			log.Debug().Msgf("mul r%d r%d r%d", r1, o2, r2)
 			vm.regs[r2] = vm.regs[r1] * vm.regs[o2]
 		} else {
-			log.Debug().Msgf("mult r%d #%d r%d", r1, o2, r2)
+			log.Debug().Msgf("mul r%d #%d r%d", r1, o2, r2)
 			vm.regs[r2] = vm.regs[r1] * o2
 		}
 		// cette opération vaut 2 cycles

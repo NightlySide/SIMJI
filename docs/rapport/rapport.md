@@ -1,15 +1,16 @@
 ---
 title: "SIMJI - Simulateur de Jeu d'Instructions"
-subtitle: "Un projet en Golang pour l'ENSTA Bretagne"
+subtitle: "U.E. 4.2. Architectures Numériques - ENSTA Bretagne"
 author: [Alexandre Froehlich]
-date: "2021-03-02"
+date: "02 Mars 2021"
 subject: "SIMJI"
 keywords: [SIMJI, asm, alexandre, froehlich]
 lang: "fr"
 titlepage: true
 toc-own-page: true
-header-left: "\\theauthor"
-header-right: "\\thetitle"
+header-left: "\\thetitle"
+header-right: "\\rightmark\\leftmark"
+footer-left: "\\theauthor"
 ---
 
 # Introduction
@@ -342,24 +343,161 @@ Qui donne après assemblage par notre programme :
 
 # La machine virtuelle
 
+Le deuxième programme que comporte le projet SIMJI est une machine virtuelle permettant d'exécuter les instructions machines que l'assembleur nous a sorti.
+
+Une machine virtuelle est simplement un logiciel permettant d'exécuter un autre programme dans une machine existante, d'où le nom de virtuelle.
+
+La machine virtuelle effectue les actions suivante pour exécuter un programme :
+
+1. Création de la machine et de sa mémoire
+2. Chargement du fichier du programme dans la machine virtuelle
+3. Execution ligne par ligne du programme
+    1. on récupère la ligne à exécuter avec un compteur : PC
+    2. on exécute son contenu en modifiant les registres et PC
+4. On atteint la fin du programme sur une instruction `stop`
+
 ## Interprétation des instructions
+
+Pour que la machine puisse comprendre les instructions on doit suivre un ensemble de règles, les mêmes que pour l'assemblage.
+
+On va d'abord chercher à comprendre l'instruction. Pour cela on peut écrire une fonction de décodage qui utilise encore une fois le principe du décalage binaire avec les doubles chevrons `>>` :
+
+```go
+// Decode retourne le decodage d'une instruction machine
+func Decode(instruction int) (int, int, int, int, int, int, int, int, int) {
+	instrNum 	:= (instruction & 0xF8000000) >> 27
+	imm1 		:= (instruction & 0x04000000) >> 26
+	o1 			:= (instruction & 0x03FFFFE0) >> 5
+	r1 			:= (instruction & 0x07C00000) >> 22
+	imm2 		:= (instruction & 0x00200000) >> 21
+	o2 			:= (instruction & 0x001FFFE0) >> 5
+	r2 			:=  instruction & 0x0000001F
+	a 			:=  instruction & 0x003FFFFF
+	n 			:=  instruction & 0x07FFFFFF
+
+	o1 = ReverseBinaryComplement(o1, 21)
+	o2 = ReverseBinaryComplement(o2, 16)
+
+	return instrNum, imm1, o1, r1, imm2, o2, r2, a, n
+}
+```
+
+Sans oublier la fonction permettant de passer d'un nombre en écriture en complément à 2, en un nombre entier signé :
+
+```go
+// ReverseBinaryComplement permet de retourner un entier signé
+// a partir d'un nombre binaire en complément à 2
+func ReverseBinaryComplement(number int, size int) int {
+	bit := number >> (size - 1)
+	if bit == 1 {
+		return -1 * (number - 1<<(size-1))
+	}
+	return number
+}
+```
+
+L'interprétation du code s'effectue alors dans une grande fonction `eval()` qui comporte un switch sur le numéro d'instruction `instrNum`. Je me permet de ne pas gâcher de place en la réécrivant. Elle est disponible dans son propre fichier dans les sources du projet.
+
+Voici un extrait de cette fonction `eval()` j'ai choisi en particulier une fonction simple, celle d'addition distinguant les cas ou l'on utilise une valeur immédiate ou bien un registre :
+
+```go
+case 1:
+	// registre sinon immediate
+	if imm2 == 0 {
+		log.Debug().Msgf("add r%d r%d r%d", r1, o2, r2)
+		vm.regs[r2] = vm.regs[r1] + vm.regs[o2]
+	} else {
+		log.Debug().Msgf("add r%d #%d r%d", r1, o2, r2)
+		vm.regs[r2] = vm.regs[r1] + o2
+	}
+	break
+```
+
+Il y a une exception à faire, il s'agit des appels systèmes `scall` qui sont implémentés de façon arbitraire. Ainsi un $0$ veut dire "afficher le contenu de $r1$ et un $1$ veut dire "demander à l'utilisateur de rentrer une valeur pour $r1$". J'utilise pour cela une fonction à part qui s'occupe de la prise en charge de ces évènements.
+
+Par exemple le programme `syracuse.asm` donne ceci comme sortie :
+
+![Lancement du programme qui calcule la suite de syracuse en mode "debug"](../syracuse_run_cli.png){ width=60% }
 
 ## Désassemblage
 
+Maintenant que SIMJI est capable de comprendre le code machine, il est facile de créer un "désassembleur", i.e. un programme permettant de retrouver le code source associé à un code machine. Il s'agit d'une fonction semblable à la fonction `eval()` mais qui ne fait que retourner les arguments ligne par ligne sans les exécuter.
+
+Cependant il est évident que nous ne pourrons pas retrouver les noms des labels, cette information étant perdue lors de l'étape d'assemblage.
+
+![SIMJI est capable de désassembler des codes assemblés par... SIMJI! et au choix d'afficher le contenu dans la console ou bien dans un fichier assembleur](../syracuse_disassembled.png){ width=70% }
+
+## Benchmark et profiling
+
+La machine virtuelle à la base était relativement lente. En effet cette dernière affichait `60 000` opérations par secondes ce qui est peu pour un langage strictement typé et compilé est peu.
+
+La première chose à faire a été d'implémenter un système d'évaluation des performances. Pour cela SIMJI lance en multi-coeur un programme donné en entrée par l'utilisateur un certain nombre de fois (quelques centaines de milliers de fois) pour établir quelques statistiques sur l'exécution.
+
+![Benchmark d'un produit matriciel sur une matrice 3x3 avec une vue des resources utilisées avec `htop`](../benchmark.png){ width=80% }
+
+On peut voir que SIMJI profite des 12 coeurs logiques de mon ordinateur pour executer le programme de test. Les résultats que j'obtiens à la fin n'indique pas d'anomalie (écart type). Il faut donc aller plus profondément dans le code et pour ça utiliser le profiling.
+
+Pour cela golang nous fournit l'outil $pprof$ qui gère toute cette partie il suffit de l'appeler depuis le code puis d'analyser les résultats avec l'outil en ligne de commande qui peut sortir un graphique similaire au suivant :
+
+![Profiling de SIMJI avant optimisation](../before_opti.gif)
+
+On remarque qu'il y a deux choses qui prennent du temps : les fonction d'affichage (print) même si elles n'affichent pas le texte dans le terminal, et le formatage des variables pour les passer d'un type à un autre.
+
+Une fois ces optimisations effectuées le benchmark retourne une moyenne de `30 000 000` opérations par secondes, ce qui est bien meilleur.
+
+![Résultats du benchmark pour un calcul matriciel 3x3](../bm_results.png){ width=80% }
+
 # Le logiciel
+
+Le cadre du projet nous demandait de réaliser deux programmes distincts : l'un pour l'assemblage et l'autre pour l'exécution du code. Cependant j'ai pris la liberté de ne fournir qu'un seul binaire permettant de faire les deux.
+
+SIMJI est disponible en ligne de commande (CLI) ainsi qu'avec une interface graphique légère. La version ligne de commande est la façon recommandée d'utiliser ce programme.
 
 ## La ligne de commande (CLI)
 
-![SIMJI utilise la bibliothèque [Cobra](https://github.com/spf13/cobra) pour standardiser la CLI](../cli_help.png)
+Pour la ligne de commande j'ai souhaité avoir un système cohérent au travers de toutes les commandes que SIMJI comporte. Pour cela j'ai décidé de passer par la bibliothèque Cobra qui est utilisée par des grands logiciels tels que [Kubernetes](https://kubernetes.io/) pour créer une ligne de commande propre et cohérente.
 
-![SIMJI est capable d'indiquer ce qui se passe à l'utilisateur, notamment lorsqu'il oublie de préciser un fichier source](../cli_missing_file.png)
+![SIMJI utilise la bibliothèque [Cobra](https://github.com/spf13/cobra) pour standardiser la CLI](../cli_help.png){ width=70% }
+
+SIMJI fournit ainsi les commandes suivantes en CLI :
+
+-   `assemble`: permet d'assembler un programme en langage assembleur/mini-MIPS
+-   `disassemble`: permet de désassembler sommairement un programme assemblé par SIMJI
+-   `run`: permet d'exécuter un programme assemblé par SIMJI
+-   `gui`: permet de lancer l'interface graphique de SIMJI
+-   `help`: permet d'afficher l'aide du programme ou d'une commande
+
+La plupart des commandes demandent à l'utilisateur de donner un fichier en entrée. Lorsque que celui-ci est omit, un message semble au suivant est affiché dans la console :
+
+![SIMJI est capable d'indiquer ce qui se passe à l'utilisateur, notamment lorsqu'il oublie de préciser un fichier source](../cli_missing_file.png){ width=70% }
+
+SIMJI est de plus capable d'afficher les erreurs d'exécution joliment dans la console comme par exemple une erreur d'assemblage en indiquant la ligne du programme à laquelle l'erreur s'est produite.
+
+Enfin certaines commandes acceptent en plus des arguments de base, des "flags" qui sont des éléments supplémentaires permettant de déclencher quelques comportements différents de la commande. En voici quelques uns :
+
+-   `--debug` (en court `-d`): permet d'afficher les informations de débogage du programme
+-   `--output` (en court `-o`): permet d'enregistrer les informations de sortie dans un fichier au lieu de les afficher dans le terminal
+-   `--benchmark` (en court `-b`): permet d'évaluer les performance du simulateur en exécutant un programme un certain nombre de fois
+-   `--cpuprofiling` (en court `-p`): permet de sortir un fichier de profiling CPU pour chercher à optimiser l'exécution du programme
 
 ## L'interface utilisateur (GUI)
 
-![En utilisant le flag `--gui` SIMJI ouvre une interface graphique permettant d'interagir avec le code](../graphical_ui.png)
+En utilisant le flag `--gui` (ou `-g`) SIMJI affiche une interface graphique permettant d'écrire du code en assembleur, de l'exécuter et de voir l'état des registres ainsi que des cases mémoires de l'application.
+
+> Attention l'interface graphique est l'élément de ce projet que j'ai le moins travaillé. Il est donc normal de voir des bugs, des fonctionnalités qui ne marchent pas [voir même des dragons](https://fr.wikipedia.org/wiki/Hic_sunt_dracones) (https://fr.wikipedia.org/wiki/Hic_sunt_dracones)
+
+![En utilisant le flag `--gui` SIMJI ouvre une interface graphique permettant d'interagir avec le code](../graphical_ui.png){ width=70% }
+
+Les autres onglets affichent des informations sur le code ou encore les registres et la mémoire de la machine virtuelle. La colonne sur la gauche donne des informations sur le nombre de cycles effectués ou encore le PC.
+
+![L'onglet mémoire permet de voir l'état des registres et des cellules mémoires de la machine virtuelle](../gui_memory.png){ width=70% }
 
 # Conclusion
 
-```
+En dehors des objectifs principaux de ce cours, i.e. la découverte des architectures des processeurs et de compilation du langage, ce projet m'a permit d'apprendre un nouveau langage de programmation, la couverture par les tests unitaires (et le pourcentage de code couvert avec codecov) mais surtout comment profiler un programme afin d'en optimiser le fonctionnement.
 
-```
+Ces nouvelles compétences me seront bien utile dans le futur pour écrire rigoureusement un code cohérent et juste tout en étant bien testé et possédant une bonne documentation.
+
+> Le code du projet est open source sous licence GPL et est disponible sur mon repository github ici : [https://github.com/NightlySide/SIMJI](https://github.com/NightlySide/SIMJI)
+>
+> La documentation officielle est disponible ici : [https://pkg.go.dev/github.com/Nightlyside/simji](https://pkg.go.dev/github.com/Nightlyside/simji#section-directories) (pensez bien à dérouler le dossier "pkg" pour voir la documentation de chacun des packages)

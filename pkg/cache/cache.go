@@ -68,7 +68,7 @@ func (c *Cache) Read(addr int) int {
 	mots := c.memory.BurstRead(addr, c.wordsNb)
 	for k, mot := range mots {
 		// writing each word in the cache
-		c.Write(EncodeAddress(tag, setID, k), *mot)
+		c.Write(EncodeAddress(tag, setID, k), mot)
 	}
 	return c.memory.Read(addr)
 }

@@ -5,7 +5,7 @@ package cache
 type Memory struct {
 	size     int
 	blocSize int
-	data     []*int
+	data     []int
 }
 
 // NewMemory creates a new memory based on the size
@@ -13,7 +13,7 @@ func NewMemory(size int, blocSize int) *Memory {
 	mem := &Memory{
 		size:     size,
 		blocSize: blocSize,
-		data:     make([]*int, size),
+		data:     make([]int, size),
 	}
 
 	return mem
@@ -22,7 +22,7 @@ func NewMemory(size int, blocSize int) *Memory {
 // Write writes data to a specific address
 func (m *Memory) Write(addr int, data int) {
 	_, setID, blockOffset := DecodeAddress(addr)
-	m.data[setID * m.blocSize+ blockOffset] = &data
+	m.data[setID * m.blocSize+ blockOffset] = data
 }
 
 // Read reads data from a specific address
@@ -30,23 +30,23 @@ func (m *Memory) Write(addr int, data int) {
 func (m *Memory) Read(addr int) int {
 	if m.CheckData(addr) {
 		_, setID, blockOffset := DecodeAddress(addr)
-		return *m.data[setID * m.blocSize+ blockOffset]
+		return m.data[setID * m.blocSize+ blockOffset]
 	}
 	return 0
 }
 
 // BurstRead returns several words stored in memory
 // called by the cache is the cache hits a miss
-func (m *Memory) BurstRead(addr int, burstSize int) []*int {
+func (m *Memory) BurstRead(addr int, burstSize int) []int {
 	// on lit un maximum de données pour remplir une ligne
 	// complète de la mémoire
-	var res []*int
+	var res []int
 	_, setID, blockOffset := DecodeAddress(addr)
 
 	// le décalage ne peut pas être plus grand
 	// que le burst size
 	if blockOffset >= burstSize {
-		return []*int{}
+		return []int{}
 	}
 
 	// iterating over the blocs
@@ -59,19 +59,19 @@ func (m *Memory) BurstRead(addr int, burstSize int) []*int {
 // CheckData is checking whether the address is stored in the memory
 func (m *Memory) CheckData(addr int) bool {
 	_, setID, blockOffset := DecodeAddress(addr)
-	return m.data[setID * m.blocSize + blockOffset] != nil
+	return len(m.data) > setID * m.blocSize + blockOffset
 }
 
-func (m *Memory) GetData() []*int {
+func (m *Memory) GetData() []int {
 	return m.data
 }
 
 func (m *Memory) SetValueFromIndex(index int, value int) {
-	m.data[index] = &value
+	m.data[index] = value
 }
 
 func (m *Memory) GetValueFromIndex(index int) int {
-	return *m.data[index]
+	return m.data[index]
 }
 
 // aide : https://github.com/michael-ross-scott/Cache-Simulator/blob/master/memoryManager.java

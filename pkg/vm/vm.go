@@ -49,7 +49,7 @@ func (vm VM) GetPC() int { return vm.pc }
 func (vm VM) GetRegs() []int { return vm.regs }
 
 // GetMemory le contenu de la mémoire
-func (vm VM) GetMemory() []*int { return vm.memory.GetData() }
+func (vm VM) GetMemory() []int { return vm.memory.GetData() }
 
 func (vm *VM) fetch() int {
 	// if the vm can fetch the instruction
