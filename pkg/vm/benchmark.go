@@ -24,7 +24,7 @@ type Benchmark struct {
 
 // StartBenchmark permet de lancer le benchmark d'une suite
 // d'instructions et retourne un objet capable de faire les statistiques
-func StartBenchmark(program []int, nbRuns int) Benchmark {
+func StartBenchmark(program []int, nbRuns int) *Benchmark {
 	var bm Benchmark
 	bm.totalTimes = make([]time.Duration, nbRuns)
 	bm.nbCycles = make([]int, nbRuns)
@@ -66,7 +66,7 @@ func StartBenchmark(program []int, nbRuns int) Benchmark {
 	// sorting results
 	sort.Float64s(bm.nbCyclesPerSecs)
 
-	return bm
+	return &bm
 }
 
 func (bm *Benchmark) average() float64 {
