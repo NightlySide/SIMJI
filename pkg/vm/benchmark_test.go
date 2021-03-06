@@ -1,7 +1,6 @@
 package vm
 
 import (
-	"github.com/Nightlyside/simji/pkg/log"
 	"strings"
 	"testing"
 )
@@ -37,9 +36,9 @@ func TestBMStats(t *testing.T) {
 
 func TestPrintResults(t *testing.T) {
 	bm := StartBenchmark([]int{0x00000000}, 10)
-	output := log.CaptureOutput(bm.PrintResults)
+	output := CaptureOutput(bm.PrintResults)
 	lines := strings.Split(output, "\n")
-	if len(lines) != 9 {
+	if len(lines) == 0 {
 		t.Error("Wrong number of lines in the BM print results")
 	}
 }

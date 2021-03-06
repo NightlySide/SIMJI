@@ -6,8 +6,8 @@ add r1, 5,  r1
 sub r1, r0, r2
 sub r1, 3,  r2
 ; multiplication
-mult r1, r1, r2
-mult r1, 5 , r2
+mul r1, r1, r2
+mul r1, 5 , r2
 ; division
 div r1, r1, r2
 div r1, 5 , r2
