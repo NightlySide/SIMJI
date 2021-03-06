@@ -7,10 +7,10 @@
 <a href="https://goreportcard.com/report/github.com/Nightlyside/SIMJI"><img alt="Go report card" src="https://goreportcard.com/badge/github.com/Nightlyside/SIMJI"></a>
 <a href="https://pkg.go.dev/github.com/Nightlyside/simji#section-directories"><img src="https://pkg.go.dev/badge/github.com/Nightlyside/simji#section-directories.svg" alt="Go Reference"></a>
 </div>
-
 <p align="center">
-<img src="./docs/cli_help.png" alt="CLI Welcome screen">
+<img src="./docs/cli_help.png" alt="CLI Welcome screen" width="70%">
 </p>
+
 
 <h4 align="center">SIMJI is a powerful and fast instruction set simulator (ISS) made in <a href="https://github.com/golang/go">Golang</a> that assemble and run MIPS-assembly programs using a convienient and simple CLI or GUI.</h4>
 
@@ -34,8 +34,8 @@
 
 ## Features
 
--   Fast Virtual Machine (5 000 000 it/sec in average)
--   Assemble MIPS-assembly files in binary
+-   Fast Virtual Machine (30 000 000 it/sec in average)
+-   Assemble mini-MIPS-assembly files in binary
 -   Graphical User Interface integrated to debug and try new code
 -   Open source project
 
@@ -117,18 +117,18 @@ scall 1
 stop
 ```
 
-In order to assemble a program into binary instructions you need to use the `--assemble` flag :
+In order to assemble a program into binary instructions you need to use the `assemble` command :
 
 ```bash
 # Will print the instructions in the terminal
-./simji --assemble program.asm
+./simji assemble program.asm
 ```
 
 You may save the instructions in a binary file as well using the `--output` flag :
 
 ```bash
 # Will save the content in a file
-./simji --assemble --output program.bin program.asm
+./simji assemble --output program.bin program.asm
 ```
 
 The content of the binary file should look like that :
@@ -141,10 +141,10 @@ The content of the binary file should look like that :
 
 ### Disassembly
 
-The same way you can disassemble a binary file using the `--disassemble` flag :
+The same way you can disassemble a binary file using the `disassemble` command :
 
 ```bash
-./simji --disassemble program.bin
+./simji disassemble program.bin
 ```
 
 Which should print something like that in the terminal :
@@ -160,7 +160,25 @@ And likewise you can save the output to an external file using the `--output` fl
 
 ### Virtual Machine
 
-(W.I.P.)
+Using the `run` command, you can execute an assembled file: 
+
+```bash
+./simji run program.bin
+```
+
+Which should print something like that in the terminal:
+
+```bash
+[SCALL 1] R1 =>  15
+```
+
+There are several new flags to use with the running process such as the debug `--debug` flag which outputs data about the processes going on like interpreting the commands and so on:
+
+![CLI run debug](./docs/cli_run_debug.png)
+
+There is the option to make a cpu profile using the `--cpuprofile` flag if you know how to use pprof (from go tools). And finally there is the `--benchmark` flag to run a number of times the program in order to make statistics about the performances of the VM:
+
+![Benchmark](./docs/benchmark.png)
 
 ### Graphical User Interface
 
