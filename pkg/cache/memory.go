@@ -62,14 +62,17 @@ func (m *Memory) CheckData(addr int) bool {
 	return len(m.data) > setID * m.blocSize + blockOffset
 }
 
+// GetData retourne les données de la mémoire
 func (m *Memory) GetData() []int {
 	return m.data
 }
 
+// SetValueFromIndex change les données à un indice donné
 func (m *Memory) SetValueFromIndex(index int, value int) {
 	m.data[index] = value
 }
 
+// GetValueFromIndex recupère les données à un certain indice
 func (m *Memory) GetValueFromIndex(index int) int {
 	return m.data[index]
 }

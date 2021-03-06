@@ -1,5 +1,7 @@
 package cache
 
+// DecodeAddress prend une adresse et retourne sa version
+// décodée
 func DecodeAddress(addr int) (int, int, int) {
 	var tag int
 	var setID int
@@ -12,6 +14,8 @@ func DecodeAddress(addr int) (int, int, int) {
 	return tag, setID, blockOffset
 }
 
+// EncodeAddress retourne une adresse à partir de ses éléments
+// (tag, setID, blockoffset)
 func EncodeAddress(tag int, setID int, blockOffset int) int {
 	var res int
 	res += tag << (4*3)
@@ -21,6 +25,8 @@ func EncodeAddress(tag int, setID int, blockOffset int) int {
 	return res
 }
 
+// AddressFromIndex retourne une addresse en fonction de l'indice de la position
+// de la variable, ou bien de l'indice du registre
 func (c *Cache) AddressFromIndex(index int) int {
 	var tag, setID, blockOffset int
 
